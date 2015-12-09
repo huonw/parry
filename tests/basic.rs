@@ -150,3 +150,15 @@ fn map() {
 
     test(c, &a.iter().map(|&x| x as f32 + 1.0).collect::<Vec<_>>());
 }
+
+#[test]
+fn add_constant() {
+    let a = &[0, 1, 2, 3] as &[_];
+
+    let c = parry::Constant(10) + a;
+
+    test(c, &[0 + 10,
+              1 + 10,
+              2 + 10,
+              3 + 10]);
+}

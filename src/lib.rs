@@ -80,6 +80,26 @@ pub trait Expression {
 }
 
 #[derive(Copy, Clone)]
+pub struct Constant<T>(pub T);
+
+impl<'a, T: 'a + Clone> Expression for Constant<T> {
+    type Element = T;
+    type Values = iter::Repeat<T>;
+
+    fn len(&self) -> Length {
+        Length::Infinite
+    }
+
+    fn values(self) -> Self::Values {
+        iter::repeat(self.0)
+    }
+
+    fn split(self) -> (Self, Self) {
+        (self.clone(), self)
+    }
+}
+
+#[derive(Copy, Clone)]
 pub struct Value<T>(pub T);
 
 impl<'a,T: 'a + Clone> Expression for Value<&'a [T]> {
