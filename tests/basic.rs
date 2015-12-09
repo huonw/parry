@@ -34,7 +34,7 @@ fn not() {
 fn add() {
     let a = &[1, 2, 3] as &[_];
     let b = &[4, 5, 6] as &[_];
-    let c = Value(a) + Value(b) + Value(a);
+    let c = Value(a) + b + a;
     test(c, &[1 + 4 + 1,
               2 + 5 + 2,
               3 + 6 + 3]);
@@ -44,7 +44,7 @@ fn add() {
 fn sub() {
     let a = &[1, 2, 3] as &[_];
     let b = &[4, 5, 6] as &[_];
-    let c = Value(a) - Value(b) - Value(a);
+    let c = Value(a) - b - a;
     test(c, &[1 - 4 - 1,
               2 - 5 - 2,
               3 - 6 - 3]);
@@ -54,7 +54,7 @@ fn sub() {
 fn mul() {
     let a = &[1, 2, 3] as &[_];
     let b = &[4, 5, 6] as &[_];
-    let c = Value(a) * Value(b) * Value(a);
+    let c = Value(a) * b * a;
     test(c, &[1 * 4 * 1,
               2 * 5 * 2,
               3 * 6 * 3]);
@@ -64,7 +64,7 @@ fn mul() {
 fn div() {
     let a = &[1, 2, 3] as &[_];
     let b = &[4, 5, 6] as &[_];
-    let c = Value(b) / Value(a);
+    let c = Value(b) / a;
     test(c, &[4 / 1,
               5 / 2,
               6 / 3]);
@@ -74,7 +74,7 @@ fn div() {
 fn bitor() {
     let a = &[1, 2, 3] as &[_];
     let b = &[4, 5, 6] as &[_];
-    let c = Value(a) | Value(b) | Value(a);
+    let c = Value(a) | b | a;
     test(c, &[1 | 4 | 1,
               2 | 5 | 2,
               3 | 6 | 3]);
@@ -84,7 +84,7 @@ fn bitor() {
 fn bitand() {
     let a = &[1, 2, 3] as &[_];
     let b = &[4, 5, 6] as &[_];
-    let c = Value(a) & Value(b) & Value(a);
+    let c = Value(a) & b & a;
     test(c, &[1 & 4 & 1,
               2 & 5 & 2,
               3 & 6 & 3]);
@@ -94,7 +94,7 @@ fn bitand() {
 fn bitxor() {
     let a = &[1, 2, 3] as &[_];
     let b = &[4, 5, 6] as &[_];
-    let c = Value(a) ^ Value(b) ^ Value(a);
+    let c = Value(a) ^ b ^ a;
     test(c, &[1 ^ 4 ^ 1,
               2 ^ 5 ^ 2,
               3 ^ 6 ^ 3]);
@@ -104,7 +104,7 @@ fn bitxor() {
 fn mul_add() {
     let a = &[1, 2, 3] as &[_];
     let b = &[4, 5, 6] as &[_];
-    let c = Value(a) * Value(b) + Value(a);
+    let c = Value(a) * b + a;
     test(c, &[1 * 4 + 1,
               2 * 5 + 2,
               3 * 6 + 3]);
@@ -115,7 +115,7 @@ fn mul_add() {
 fn add_mul() {
     let a = &[1, 2, 3] as &[_];
     let b = &[4, 5, 6] as &[_];
-    let c = Value(a) * (Value(b) + Value(a));
+    let c = Value(a) * (Value(b) + a);
     test(c, &[1 * (4 + 1),
               2 * (5 + 2),
               3 * (6 + 3)]);
@@ -127,7 +127,7 @@ fn long() {
     let a = (0..1_000_000_i64).collect::<Vec<_>>();
     let b = a.clone();
 
-    let c = Value(&a[..]) + Value(&b[..]) * Value(&a[..]);
+    let c = Value(&a[..]) + Value(&b[..]) * &a[..];
     test(c, &a.iter().map(|&x| x + x * x).collect::<Vec<_>>());
 }
 
@@ -136,7 +136,7 @@ fn zip() {
     let a = (0..100).collect::<Vec<_>>();
     let b = a.clone();
 
-    let c = Value(&a[..]).zip(Value(&b[..]));
+    let c = Value(&a[..]).zip(&b[..]);
 
     test(c, &a.iter().map(|&x| (x, x)).collect::<Vec<_>>());
 }

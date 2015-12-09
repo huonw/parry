@@ -95,9 +95,24 @@ impl<'a,T: 'a + Clone> Expression for Value<&'a [T]> {
     }
 
     fn split(self) -> (Self, Self) {
-        let len = self.0.len();
-        let half = len/2;
-        (Value(&self.0[..half]),
-         Value(&self.0[half..]))
+        let (lo, hi) = self.0.split_at(self.0.len() / 2);
+        (Value(lo), Value(hi))
+    }
+}
+
+impl<'a, T: 'a + Clone> Expression for &'a [T] {
+    type Element = T;
+    type Values = iter::Cloned<slice::Iter<'a, T>>;
+
+    fn len(&self) -> Length {
+        Length::Finite((*self).len())
+    }
+
+    fn values(self) -> Self::Values {
+        self.iter().cloned()
+    }
+
+    fn split(self) -> (Self, Self) {
+        self.split_at(self.len() / 2)
     }
 }
