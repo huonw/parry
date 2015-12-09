@@ -8,7 +8,10 @@ mod raw;
 pub use raw::{Zip, Map};
 
 mod iterators;
-pub use iterators::{Binary, Plus, Times, Tuple};
+pub use iterators::{Binary, Unary,
+                    Bang,
+                    Plus, Minus, Times, Divide, Pipe, Ampersand, Caret,
+                    Tuple};
 
 const MIN_THRESHOLD: usize = 1000;
 const MAX_COUNT: usize = 20;

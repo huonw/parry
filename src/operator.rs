@@ -1,67 +1,94 @@
+pub use iterators::{Binary, Unary,
+                    Bang,
+                    Plus, Minus, Times, Divide, Pipe, Ampersand, Caret};
 use {Expression, Value};
-use iterators::{Binary, Plus, Times};
+use raw::{Zip, Map};
 use std::ops;
 
-#[derive(Copy, Clone)]
-pub struct Add<X, Y>(X, Y);
-impl<X, Y> Expression for Add<X, Y>
-    where X: Expression,
-          Y: Expression,
-          X::Element: ops::Add<Y::Element> + Clone,
-          Y::Element: Clone
-{
-    type Element = <X::Element as ops::Add<Y::Element>>::Output;
-    type Values = Binary<Plus, X::Values, Y::Values>;
+macro_rules! un_op_struct {
+    ($($name: ident, $op: ident;)*) => {
+        $(
+            #[derive(Copy, Clone)]
+            pub struct $name<X>(X);
 
-    fn len(&self) -> usize {
-        let len = self.0.len();
-        debug_assert_eq!(len, self.1.len());
-        len
-    }
+            impl<X> Expression for $name<X>
+                where X: Expression,
+                      X::Element: ops::$name + Clone,
+            {
+                type Element = <X::Element as ops::$name>::Output;
+                type Values = Unary<$op, X::Values>;
 
-    fn values(self) -> Self::Values {
-        Binary::new(Plus, self.0.values(), self.1.values())
-    }
+                fn len(&self) -> usize {
+                    self.0.len()
+                }
 
-    fn split(self) -> (Self, Self) {
-        let (x1, x2) = self.0.split();
-        let (y1, y2) = self.1.split();
-        (Add(x1, y1), Add(x2, y2))
+                fn values(self) -> Self::Values {
+                    Unary::new($op, self.0.values())
+                }
+
+                fn split(self) -> (Self, Self) {
+                    let (x1, x2) = self.0.split();
+                    ($name(x1), $name(x2))
+                }
+            }
+            )*
     }
 }
 
-#[derive(Copy, Clone)]
-pub struct Mul<X, Y>(X, Y);
-impl<X, Y> Expression for Mul<X, Y>
-    where X: Expression,
-          Y: Expression,
-          X::Element: ops::Mul<Y::Element> + Clone,
-          Y::Element: Clone
-{
-    type Element = <X::Element as ops::Mul<Y::Element>>::Output;
-    type Values = Binary<Times, X::Values, Y::Values>;
+un_op_struct! {
+    Not, Bang;
+    Neg, Minus;
+}
 
-    fn len(&self) -> usize {
-        let len = self.0.len();
-        debug_assert_eq!(len, self.1.len());
-        len
-    }
+macro_rules! bin_op_struct {
+    ($($name: ident, $op: ident;)*) => {
+        $(
+            #[derive(Copy, Clone)]
+            pub struct $name<X, Y>(X, Y);
 
-    fn values(self) -> Self::Values {
-        Binary::new(Times, self.0.values(), self.1.values())
-    }
+            impl<X, Y> Expression for $name<X, Y>
+                where X: Expression,
+                      Y: Expression,
+                      X::Element: ops::$name<Y::Element> + Clone,
+                      Y::Element: Clone
+            {
+                type Element = <X::Element as ops::$name<Y::Element>>::Output;
+                type Values = Binary<$op, X::Values, Y::Values>;
 
-    fn split(self) -> (Self, Self) {
-        let (x1, x2) = self.0.split();
-        let (y1, y2) = self.1.split();
-        (Mul(x1, y1), Mul(x2, y2))
+                fn len(&self) -> usize {
+                    let len = self.0.len();
+                    debug_assert_eq!(len, self.1.len());
+                    len
+                }
+
+                fn values(self) -> Self::Values {
+                    Binary::new($op, self.0.values(), self.1.values())
+                }
+
+                fn split(self) -> (Self, Self) {
+                    let (x1, x2) = self.0.split();
+                    let (y1, y2) = self.1.split();
+                    ($name(x1, y1), $name(x2, y2))
+                }
+            }
+            )*
     }
+}
+
+bin_op_struct! {
+    Add, Plus;
+    Sub, Minus;
+    Mul, Times;
+    Div, Divide;
+    BitOr, Pipe;
+    BitAnd, Ampersand;
+    BitXor, Caret;
 }
 
 macro_rules! item { ($i: item) => { $i } }
 
 macro_rules! make_impl {
-    ($name: ident, $method: ident, <$($param: tt),*> $for_: ty) => {
+    (binary, $name: ident, $method: ident, <$($param: tt),*> $for_: ty) => {
         item! {
             impl<$($param,)* E> ops::$name<E> for $for_
                 where $for_: Expression, E: Expression,
@@ -75,17 +102,59 @@ macro_rules! make_impl {
                 }
             }
         }
+    };
+    (unary, $name: ident, $method: ident, <$($param: tt),*> $for_: ty) => {
+        item! {
+            impl<$($param,)*> ops::$name for $for_
+                where $for_: Expression,
+                      <$for_ as Expression>::Element: ops::$name,
+            {
+                type Output = $name<Self>;
+
+                fn $method(self) -> Self::Output {
+                    $name(self)
+                }
+            }
+        }
     }
 }
 macro_rules! impls {
-    ($($name: ident, $method: ident: $(<$($param: tt),*> $for_: ty),*;)*) => {
+    ([] $($__: tt)*) => {};
+
+    ([
+        $kind: ident, $trayt: ident, $method: ident;
+        $($kind_rest: ident, $trayt_rest: ident, $method_rest: ident;)*
+            ]
+     $(<$($param: tt),*> $for_: ty,)*) => {
         $(
-            $(make_impl!($name, $method, <$($param),*> $for_);)*
+            make_impl!($kind, $trayt, $method, <$($param),*> $for_);
                 )*
+            impls!([$($kind_rest, $trayt_rest, $method_rest;)*]
+                   $(<$($param),*> $for_,)*);
     }
 }
 
+
 impls! {
-    Add, add: <'a, T> Value<&'a [T]>, <X, Y> Add<X, Y>, <X, Y> Mul<X, Y>;
-    Mul, mul: <'a, T> Value<&'a [T]>, <X, Y> Add<X, Y>, <X, Y> Mul<X, Y>;
+    [
+        unary, Not, not;
+        unary, Neg, neg;
+        binary, Add, add;
+        binary, Sub, sub;
+        binary, Mul, mul;
+        binary, Div, div;
+        binary, BitOr, bitor;
+        binary, BitAnd, bitand;
+        binary, BitXor, bitxor;
+    ]
+    <'a, T> Value<&'a [T]>,
+    <X, Y> Add<X, Y>,
+    <X, Y> Sub<X, Y>,
+    <X, Y> Mul<X, Y>,
+    <X, Y> Div<X, Y>,
+    <X, Y> BitOr<X, Y>,
+    <X, Y> BitAnd<X, Y>,
+    <X, Y> BitXor<X, Y>,
+    <X, Y> Zip<X, Y>,
+    <X, F> Map<X, F>,
 }

@@ -11,6 +11,25 @@ fn test<E>(e: E, expected: &[E::Element])
     assert_eq!(out, expected);
 }
 
+
+#[test]
+fn neg() {
+    let a = &[1, 2, 3] as &[_];
+    let c = -Value(a);
+    test(c, &[-1,
+              -2,
+              -3]);
+}
+
+#[test]
+fn not() {
+    let a = &[1, 2, 3] as &[_];
+    let c = !Value(a);
+    test(c, &[!1,
+              !2,
+              !3]);
+}
+
 #[test]
 fn add() {
     let a = &[1, 2, 3] as &[_];
@@ -22,6 +41,16 @@ fn add() {
 }
 
 #[test]
+fn sub() {
+    let a = &[1, 2, 3] as &[_];
+    let b = &[4, 5, 6] as &[_];
+    let c = Value(a) - Value(b) - Value(a);
+    test(c, &[1 - 4 - 1,
+              2 - 5 - 2,
+              3 - 6 - 3]);
+}
+
+#[test]
 fn mul() {
     let a = &[1, 2, 3] as &[_];
     let b = &[4, 5, 6] as &[_];
@@ -29,6 +58,46 @@ fn mul() {
     test(c, &[1 * 4 * 1,
               2 * 5 * 2,
               3 * 6 * 3]);
+}
+
+#[test]
+fn div() {
+    let a = &[1, 2, 3] as &[_];
+    let b = &[4, 5, 6] as &[_];
+    let c = Value(b) / Value(a);
+    test(c, &[4 / 1,
+              5 / 2,
+              6 / 3]);
+}
+
+#[test]
+fn bitor() {
+    let a = &[1, 2, 3] as &[_];
+    let b = &[4, 5, 6] as &[_];
+    let c = Value(a) | Value(b) | Value(a);
+    test(c, &[1 | 4 | 1,
+              2 | 5 | 2,
+              3 | 6 | 3]);
+}
+
+#[test]
+fn bitand() {
+    let a = &[1, 2, 3] as &[_];
+    let b = &[4, 5, 6] as &[_];
+    let c = Value(a) & Value(b) & Value(a);
+    test(c, &[1 & 4 & 1,
+              2 & 5 & 2,
+              3 & 6 & 3]);
+}
+
+#[test]
+fn bitxor() {
+    let a = &[1, 2, 3] as &[_];
+    let b = &[4, 5, 6] as &[_];
+    let c = Value(a) ^ Value(b) ^ Value(a);
+    test(c, &[1 ^ 4 ^ 1,
+              2 ^ 5 ^ 2,
+              3 ^ 6 ^ 3]);
 }
 
 #[test]
