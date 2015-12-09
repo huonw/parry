@@ -1,0 +1,12 @@
+[package]
+authors = ["Huon Wilson <dbau.pp+github@gmail.com>"]
+name = "parry"
+version = "0.1.0"
+
+[dependencies]
+crossbeam = "0.1.6"
+simple_parallel = "0.3.0"
+
+[dependencies.rayon]
+git = "https://github.com/nikomatsakis/rayon"
+optional = false
