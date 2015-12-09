@@ -3,15 +3,13 @@ extern crate rayon;
 use std::{cmp, iter, slice};
 
 mod operator;
-pub use operator::{Add, Mul};
+pub use operator::{Neg, Not,
+                   Add, Sub, Mul, Div,
+                   BitOr, BitAnd, BitXor};
 mod raw;
 pub use raw::{Zip, Map};
 
-mod iterators;
-pub use iterators::{Binary, Unary,
-                    Bang,
-                    Plus, Minus, Times, Divide, Pipe, Ampersand, Caret,
-                    Tuple};
+pub mod iterators;
 
 const MIN_THRESHOLD: usize = 1000;
 const MAX_COUNT: usize = 20;

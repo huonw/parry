@@ -13,8 +13,8 @@ fn add_seq(b: &mut B, n: i64) {
     let y = x.clone();
     let mut out = x.clone();
     b.iter(|| {
-        let values = parry::Binary::new(parry::Plus,
-                                        x.iter().cloned(), y.iter().cloned())
+        let values = parry::iterators::Binary::new(parry::iterators::Plus,
+                                                   x.iter().cloned(), y.iter().cloned())
             .map(|x| 1_000_000 / (x + 1));
         for (o, i) in out.iter_mut().zip(values) {
             *o = i;
