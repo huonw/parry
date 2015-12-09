@@ -10,3 +10,6 @@ simple_parallel = "0.3.0"
 [dependencies.rayon]
 git = "https://github.com/nikomatsakis/rayon"
 optional = false
+
+[features]
+test-everything = []
