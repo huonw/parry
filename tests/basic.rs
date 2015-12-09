@@ -162,3 +162,14 @@ fn add_constant() {
               2 + 10,
               3 + 10]);
 }
+
+#[test]
+fn switch() {
+    let cond = &[true, true, false, true] as &[_];
+    let a = &[0, 1, 2, 3] as &[_];
+    let b = &[10, 11, 12, 13] as &[_];
+
+    let c = Value(cond).switch(a, b);
+
+    test(c, &[0, 1, 12, 3]);
+}

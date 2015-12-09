@@ -12,7 +12,7 @@ pub use raw::{Zip, Map};
 pub mod iterators;
 
 mod simple;
-pub use simple::{Value, Constant};
+pub use simple::{Value, Constant, Switch};
 
 const MIN_THRESHOLD: usize = 1024;
 const MAX_COUNT: usize = 32;
@@ -79,5 +79,11 @@ pub trait Expression {
     // TODO: this needs to handle SIMD etc.
     fn map<O, F: FnMut(Self::Element) -> O>(self, f: F) -> Map<Self, F> where Self: Sized {
         raw::make_map(self, f)
+    }
+
+    fn switch<T, E>(self, then: T, else_: E) -> Switch<Self, T, E>
+        where Self: Sized + Expression<Element = bool>, T: Expression, E: Expression<Element = T::Element>
+    {
+        simple::make_switch(self, then, else_)
     }
 }
