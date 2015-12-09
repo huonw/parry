@@ -14,8 +14,8 @@ pub mod iterators;
 mod simple;
 pub use simple::{Value, Constant};
 
-const MIN_THRESHOLD: usize = 1000;
-const MAX_COUNT: usize = 20;
+const MIN_THRESHOLD: usize = 1024;
+const MAX_COUNT: usize = 32;
 
 fn join<F: Send + FnOnce(), G: Send + FnOnce()>(f: F, g: G) {
     rayon::join(f, g);
