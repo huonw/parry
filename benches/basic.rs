@@ -4,7 +4,7 @@ extern crate test;
 extern crate crossbeam;
 extern crate rayon;
 extern crate parry;
-use parry::{Expression, Value};
+use parry::{Expression, Constant, Value};
 
 use test::Bencher as B;
 
@@ -27,9 +27,9 @@ fn add_par(b: &mut B, n: i64) {
     let y = x.clone();
     let mut out = x.clone();
     b.iter(|| {
-        let e = Value(&test::black_box(&x)[..]) + Value(&test::black_box(&y)[..]);
-        let f = |x| 1_000_000 / (x + 1);
-        parry::evaluate(&mut out, e.map(&f));
+        let e = Constant(1_000_000) / (Value(&test::black_box(&x)[..]) + &test::black_box(&y)[..]
+                                       + Constant(1));
+        parry::evaluate(&mut out, e);
     })
 }
 
