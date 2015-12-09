@@ -1,5 +1,5 @@
-use std::iter;
-use {Expression};
+use std::{cmp, iter};
+use {Expression, Length};
 use iterators::{Binary, Tuple};
 
 #[derive(Copy, Clone)]
@@ -20,10 +20,11 @@ impl<X: Expression, Y: Expression> Expression for Zip<X, Y> {
     type Element = (X::Element, Y::Element);
     type Values = Binary<Tuple, X::Values, Y::Values>;
 
-    fn len(&self) -> usize {
-        let len = self.0.len();
-        debug_assert_eq!(len, self.1.len());
-        len
+    fn len(&self) -> Length {
+        let len1 = self.0.len();
+        let len2 = self.1.len();
+        debug_assert!(len1.compatible(len2));
+        cmp::min(len1, len2)
     }
 
     fn values(self) -> Self::Values {
@@ -41,7 +42,7 @@ impl<X: Expression, O, F: Clone + FnMut(X::Element) -> O> Expression for Map<X, 
     type Element = O;
     type Values = iter::Map<X::Values, F>;
 
-    fn len(&self) -> usize {
+    fn len(&self) -> Length {
         self.0.len()
     }
 

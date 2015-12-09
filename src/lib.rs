@@ -32,7 +32,7 @@ fn eval_inner<E>(dst: &mut [E::Element], e: E, threshold: usize)
     where E: Expression + Send, E::Element: Send
 {
     let len = dst.len();
-    assert_eq!(len, e.len());
+    assert!(e.len().compatible(Length::Finite(len)));
 
     if len > threshold {
         let (low, high) = dst.split_at_mut(len / 2);
@@ -46,11 +46,26 @@ fn eval_inner<E>(dst: &mut [E::Element], e: E, threshold: usize)
     }
 }
 
+#[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub enum Length {
+    Finite(usize),
+    Infinite,
+}
+
+impl Length {
+    fn compatible(self, other: Length) -> bool {
+        match (self, other) {
+            (Length::Finite(a), Length::Finite(b)) => a == b,
+            (Length::Infinite, _) | (_, Length::Infinite) => true,
+        }
+    }
+}
+
 pub trait Expression {
     type Element;
     type Values: Iterator<Item = Self::Element>;
 
-    fn len(&self) -> usize;
+    fn len(&self) -> Length;
 
     fn values(self) -> Self::Values;
 
@@ -73,8 +88,8 @@ impl<'a,T: 'a + Clone> Expression for Value<&'a [T]> {
     type Element = T;
     type Values = iter::Cloned<slice::Iter<'a, T>>;
 
-    fn len(&self) -> usize {
-        self.0.len()
+    fn len(&self) -> Length {
+        Length::Finite(self.0.len())
     }
 
     fn values(self) -> Self::Values {

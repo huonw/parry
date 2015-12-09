@@ -1,9 +1,9 @@
 pub use iterators::{Binary, Unary,
                     Bang,
                     Plus, Minus, Times, Divide, Pipe, Ampersand, Caret};
-use {Expression, Value};
+use {Expression, Constant, Value, Length};
 use raw::{Zip, Map};
-use std::ops;
+use std::{cmp, ops};
 
 macro_rules! un_op_struct {
     ($($name: ident, $op: ident;)*) => {
@@ -18,7 +18,7 @@ macro_rules! un_op_struct {
                 type Element = <X::Element as ops::$name>::Output;
                 type Values = Unary<$op, X::Values>;
 
-                fn len(&self) -> usize {
+                fn len(&self) -> Length {
                     self.0.len()
                 }
 
@@ -55,10 +55,11 @@ macro_rules! bin_op_struct {
                 type Element = <X::Element as ops::$name<Y::Element>>::Output;
                 type Values = Binary<$op, X::Values, Y::Values>;
 
-                fn len(&self) -> usize {
-                    let len = self.0.len();
-                    debug_assert_eq!(len, self.1.len());
-                    len
+                fn len(&self) -> Length {
+                    let len1 = self.0.len();
+                    let len2 = self.1.len();
+                    debug_assert!(len1.compatible(len2));
+                    cmp::min(len1, len2)
                 }
 
                 fn values(self) -> Self::Values {
@@ -97,7 +98,7 @@ macro_rules! make_impl {
                 type Output = $name<Self, E>;
 
                 fn $method(self, other: E) -> Self::Output {
-                    assert_eq!(self.len(), other.len());
+                    assert!(self.len().compatible(other.len()));
                     $name(self, other)
                 }
             }
@@ -147,6 +148,7 @@ impls! {
         binary, BitAnd, bitand;
         binary, BitXor, bitxor;
     ]
+    <T> Constant<T>,
     <'a, T> Value<&'a [T]>,
     <X, Y> Add<X, Y>,
     <X, Y> Sub<X, Y>,
