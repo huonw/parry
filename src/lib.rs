@@ -15,37 +15,12 @@ pub mod iterators;
 mod simple;
 pub use simple::{E, Constant, Switch};
 
-const MIN_THRESHOLD: usize = 1024;
-const MAX_COUNT: usize = 32;
-
-fn join<F: Send + FnOnce(), G: Send + FnOnce()>(f: F, g: G) {
-    rayon::join(f, g);
-}
+mod evaluation;
 
 pub fn evaluate<E>(dst: &mut [E::Element], e: E)
     where E: Expression
 {
-    let len = dst.len();
-
-    eval_inner(dst, e, cmp::max(len / MAX_COUNT, MIN_THRESHOLD));
-}
-
-fn eval_inner<E>(dst: &mut [E::Element], e: E, threshold: usize)
-    where E: Expression
-{
-    let len = dst.len();
-    assert!(e.length().compatible(Length::Finite(len)));
-
-    if len > threshold {
-        let (low, high) = dst.split_at_mut(len / 2);
-        let (e_low, e_high) = e.split();
-        join(|| eval_inner(low, e_low, threshold),
-             || eval_inner(high, e_high, threshold));
-    } else {
-        for (o, i) in dst.iter_mut().zip(e.values()) {
-            *o = i;
-        }
-    }
+    evaluation::evaluate(e, evaluation::SetArray(dst))
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
