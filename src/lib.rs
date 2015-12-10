@@ -16,7 +16,7 @@ pub mod iterators;
 mod simple;
 pub use simple::{E, Constant, Switch, Rev};
 
-mod evaluation;
+pub mod evaluation;
 
 pub fn evaluate<E>(dst: &mut [E::Element], e: E)
     where E: Expression
@@ -56,6 +56,17 @@ pub trait Expression: Send {
         where Self: Sized + Expression<Element = T>, T: num::Zero + ops::Add<T, Output = T>
     {
         evaluation::evaluate(self, evaluation::Sum)
+    }
+
+    fn max(self) -> <evaluation::Max as evaluation::Reduce<Self::Element>>::Output
+        where Self: Sized, evaluation::Max: evaluation::Reduce<Self::Element>
+    {
+        evaluation::evaluate(self, evaluation::Max)
+    }
+    fn min(self) -> <evaluation::Min as evaluation::Reduce<Self::Element>>::Output
+        where Self: Sized, evaluation::Min: evaluation::Reduce<Self::Element>
+    {
+        evaluation::evaluate(self, evaluation::Min)
     }
 
     // TODO: this need to handle SIMD etc.

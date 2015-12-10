@@ -87,6 +87,13 @@ impl<'a, T> Reduce<T> for SetArray<'a, T>
     }
 }
 
+macro_rules! repeated {
+    ($name: ident) => {
+        fn expected_length(&self) -> Length { Length::Infinite }
+        fn split(self) -> ($name, $name, $name) { ($name, $name, $name) }
+    }
+}
+
 pub struct Sum;
 impl<T> Reduce<T> for Sum
     where T: Send + Zero + ops::Add<T, Output = T>
@@ -94,9 +101,7 @@ impl<T> Reduce<T> for Sum
     type Output = T;
     type Scalar = Sum;
 
-    fn expected_length(&self) -> Length { Length::Infinite }
-
-    fn split(self) -> (Sum, Sum, Sum) { (Sum, Sum, Sum) }
+    repeated!(Sum);
 
     fn reduce<X>(&mut self, vals: X) -> Self::Output
         where X: Iterator<Item = T>
@@ -111,3 +116,35 @@ impl<T> ReduceScalar<T> for Sum
         a + b
     }
 }
+
+macro_rules! minmax {
+    ($name: ident, $method: ident: $($f: ty),*) => {
+        pub struct $name;
+        $(
+            impl Reduce<$f> for $name {
+                type Output = Option<$f>;
+                type Scalar = $name;
+
+                repeated!($name);
+
+                fn reduce<X>(&mut self, mut vals: X) -> Self::Output
+                    where X: Iterator<Item = $f>
+                {
+                    vals.next().map(|first| vals.fold(first, |x, y| x.$method(y)))
+                }
+            }
+            impl ReduceScalar<Option<$f>> for $name {
+                fn combine(self, a: Option<$f>, b: Option<$f>) -> Option<$f> {
+                    match (a, b) {
+                        (Some(x), Some(y)) => Some(x.$method(y)),
+                        (x, None) => x,
+                        (None, y) => y,
+                    }
+                }
+            }
+            )*
+    }
+}
+
+minmax!(Min, min: f32, f64);
+minmax!(Max, max: f32, f64);

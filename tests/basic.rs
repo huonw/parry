@@ -192,3 +192,17 @@ fn sum() {
 
     assert_eq!(E(a).sum(), (0..8).fold(0, |a, b| a + b));
 }
+
+#[test]
+fn max() {
+    let a = &[0.0, 1.0, 2.0, 3.0, 4.0, 5.0] as &[_];
+    assert_eq!(E(a).max(), Some(5.0));
+    assert_eq!((-E(a)).max(), Some(0.0));
+}
+
+#[test]
+fn min() {
+    let a = &[0.0, 1.0, 2.0, 3.0, 4.0, 5.0] as &[_];
+    assert_eq!(E(a).min(), Some(0.0));
+    assert_eq!((-E(a)).min(), Some(-5.0));
+}
