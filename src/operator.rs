@@ -20,8 +20,8 @@ macro_rules! un_op_struct {
                 type Element = <X::Element as ops::$name>::Output;
                 type Values = Unary<$op, X::Values>;
 
-                fn len(&self) -> Length {
-                    self.0.len()
+                fn length(&self) -> Length {
+                    self.0.length()
                 }
 
                 fn values(self) -> Self::Values {
@@ -58,9 +58,9 @@ macro_rules! bin_op_struct {
                 type Element = <$op as BinOp<X::Element, Y::Element>>::Output;
                 type Values = Binary<$op, X::Values, Y::Values>;
 
-                fn len(&self) -> Length {
-                    let len1 = self.0.len();
-                    let len2 = self.1.len();
+                fn length(&self) -> Length {
+                    let len1 = self.0.length();
+                    let len2 = self.1.length();
                     debug_assert!(len1.compatible(len2));
                     cmp::min(len1, len2)
                 }
@@ -126,7 +126,7 @@ macro_rules! make_impl {
                 type Output = $name<Self, E>;
 
                 fn $method(self, other: E) -> Self::Output {
-                    assert!(self.len().compatible(other.len()));
+                    assert!(self.length().compatible(other.length()));
                     $name(self, other)
                 }
             }

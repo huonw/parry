@@ -20,9 +20,9 @@ impl<X: Expression, Y: Expression> Expression for Zip<X, Y> {
     type Element = (X::Element, Y::Element);
     type Values = Binary<Tuple, X::Values, Y::Values>;
 
-    fn len(&self) -> Length {
-        let len1 = self.0.len();
-        let len2 = self.1.len();
+    fn length(&self) -> Length {
+        let len1 = self.0.length();
+        let len2 = self.1.length();
         debug_assert!(len1.compatible(len2));
         cmp::min(len1, len2)
     }
@@ -42,8 +42,8 @@ impl<X: Expression, O: Send, F: Clone + FnMut(X::Element) -> O + Send> Expressio
     type Element = O;
     type Values = iter::Map<X::Values, F>;
 
-    fn len(&self) -> Length {
-        self.0.len()
+    fn length(&self) -> Length {
+        self.0.length()
     }
 
     fn values(self) -> Self::Values {

@@ -9,7 +9,7 @@ impl<'a, T: 'a + Send + Clone> Expression for Constant<T> {
     type Element = T;
     type Values = iter::Repeat<T>;
 
-    fn len(&self) -> Length {
+    fn length(&self) -> Length {
         Length::Infinite
     }
 
@@ -29,7 +29,7 @@ impl<'a, T: 'a + Sync + Send + Clone> Expression for Value<&'a [T]> {
     type Element = T;
     type Values = iter::Cloned<slice::Iter<'a, T>>;
 
-    fn len(&self) -> Length {
+    fn length(&self) -> Length {
         Length::Finite(self.0.len())
     }
 
@@ -47,7 +47,7 @@ impl<'a, T: 'a + Sync + Send + Clone> Expression for &'a [T] {
     type Element = T;
     type Values = iter::Cloned<slice::Iter<'a, T>>;
 
-    fn len(&self) -> Length {
+    fn length(&self) -> Length {
         Length::Finite((*self).len())
     }
 
@@ -78,10 +78,10 @@ impl<B, T, E> Expression for Switch<B, T, E>
     type Element = T::Element;
     type Values = SwitchIter<B::Values, T::Values, E::Values>;
 
-    fn len(&self) -> Length {
-        let len_b = self.0.len();
-        let len_t = self.1.len();
-        let len_e = self.2.len();
+    fn length(&self) -> Length {
+        let len_b = self.0.length();
+        let len_t = self.1.length();
+        let len_e = self.2.length();
         debug_assert!(len_b.compatible(len_t) && len_b.compatible(len_e) && len_t.compatible(len_e));
         cmp::min(cmp::min(len_b, len_t), len_e)
     }

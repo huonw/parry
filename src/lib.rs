@@ -34,7 +34,7 @@ fn eval_inner<E>(dst: &mut [E::Element], e: E, threshold: usize)
     where E: Expression
 {
     let len = dst.len();
-    assert!(e.len().compatible(Length::Finite(len)));
+    assert!(e.length().compatible(Length::Finite(len)));
 
     if len > threshold {
         let (low, high) = dst.split_at_mut(len / 2);
@@ -67,7 +67,7 @@ pub trait Expression: Send {
     type Element: Send;
     type Values: Iterator<Item = Self::Element>;
 
-    fn len(&self) -> Length;
+    fn length(&self) -> Length;
 
     fn values(self) -> Self::Values;
 
