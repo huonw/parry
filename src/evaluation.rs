@@ -22,7 +22,7 @@ pub fn evaluate<E, R>(e: E, reduce: R) -> R::Output
     eval_inner(e, cmp::max(len / MAX_COUNT, MIN_THRESHOLD), reduce)
 }
 
-fn eval_inner<E, R>(e: E, threshold: usize, mut reduce: R) -> R::Output
+fn eval_inner<E, R>(e: E, threshold: usize, reduce: R) -> R::Output
     where E: Expression, R: Reduce<E::Element>
 {
     let len = get_len(e.length(), reduce.expected_length());

@@ -7,11 +7,14 @@ fn test<E>(e: E, expected: &[E::Element])
 
 {
     let mut out = expected.to_owned();
-    e.clone().write(&mut out);
+    e.clone().write(&mut out[..]);
     assert_eq!(out, expected);
 
-    e.rev().write(&mut out);
+    e.clone().rev().write(&mut out[..]);
     out.reverse();
+    assert_eq!(out, expected);
+
+    e.rev().write(out[..].rev());
     assert_eq!(out, expected);
 }
 

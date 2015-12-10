@@ -7,7 +7,7 @@ fn test<E>(e: E, expected: &[E::Element])
 
 {
     let mut out = expected.to_owned();
-    e.write(&mut out);
+    e.write(&mut out[..]);
     assert_eq!(out, expected);
 }
 

@@ -1,6 +1,6 @@
 use std::ops;
 use num::Zero;
-use {Length};
+use {Expression, Length};
 
 pub trait Reduce<T>: Send {
     type Output: Send;
@@ -8,7 +8,7 @@ pub trait Reduce<T>: Send {
 
     fn expected_length(&self) -> Length;
     fn split(self) -> (Self, Self, Self::Scalar);
-    fn reduce<X>(&mut self, X) -> Self::Output
+    fn reduce<X>(self, X) -> Self::Output
         where X: Iterator<Item = T>;
 }
 
@@ -22,27 +22,26 @@ impl ReduceScalar<()> for () {
     }
 }
 
-pub struct SetArray<'a, T: 'a>(pub &'a mut [T]);
-impl<'a, T> Reduce<T> for SetArray<'a, T>
-    where T: Send
+pub struct Write<E>(pub E);
+impl<'a, E, T> Reduce<T> for Write<E>
+    where T: 'a + Send, E: Expression<Element = &'a mut T>
 {
     type Output = ();
     type Scalar = ();
 
     fn expected_length(&self) -> Length {
-        Length::Finite(self.0.len())
+        self.0.length()
     }
 
     fn split(self) -> (Self, Self, ()) {
-        let half = self.0.len() / 2;
-        let (lo, hi) = self.0.split_at_mut(half);
-        (SetArray(lo), SetArray(hi), ())
+        let (lo, hi) = self.0.split(false);
+        (Write(lo), Write(hi), ())
     }
 
-    fn reduce<X>(&mut self, vals: X) -> Self::Output
+    fn reduce<X>(self, vals: X) -> Self::Output
         where X: Iterator<Item = T>
     {
-        for (o, i) in self.0.iter_mut().zip(vals) {
+        for (o, i) in self.0.values().zip(vals) {
             *o = i;
         }
     }
@@ -64,7 +63,7 @@ impl<T> Reduce<T> for Sum
 
     repeated!(Sum);
 
-    fn reduce<X>(&mut self, vals: X) -> Self::Output
+    fn reduce<X>(self, vals: X) -> Self::Output
         where X: Iterator<Item = T>
     {
         vals.fold(Zero::zero(), |x, y| x + y)
@@ -88,7 +87,7 @@ macro_rules! minmax {
 
                 repeated!($name);
 
-                fn reduce<X>(&mut self, mut vals: X) -> Self::Output
+                fn reduce<X>(self, mut vals: X) -> Self::Output
                     where X: Iterator<Item = $f>
                 {
                     vals.next().map(|first| vals.fold(first, |x, y| x.$method(y)))

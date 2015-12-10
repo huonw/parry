@@ -47,10 +47,10 @@ pub trait Expression: Send {
 
     fn rev(self) -> Self::Rev;
 
-    fn write(self, out: &mut [Self::Element])
-        where Self: Sized
+    fn write<'a, E>(self, out: E)
+        where Self: Sized, Self::Element: 'a, E: Expression<Element = &'a mut Self::Element>
     {
-        evaluation::evaluate(self, reduce::SetArray(out))
+        evaluation::evaluate(self, reduce::Write(out))
     }
 
     fn sum<T>(self) -> Self::Element
