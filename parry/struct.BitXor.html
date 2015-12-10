@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `BitXor` struct in crate `parry`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, BitXor">
+
+    <title>parry::BitXor - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='index.html'>parry</a></p><script>window.sidebarCurrent = {name: 'BitXor', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>parry</a>::<wbr><a class='struct' href=''>BitXor</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-295' class='srclink' href='../src/parry/operator.rs.html#54' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct BitXor&lt;X, Y&gt;(_, _);</pre><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl&lt;X, Y&gt; <a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Expression</a> for <a class='struct' href='../parry/struct.BitXor.html' title='parry::BitXor'>BitXor</a>&lt;X, Y&gt; <span class='where'>where X: <a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Expression</a>, Y: <a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Expression</a>, X::Element: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.BitXor.html' title='core::ops::BitXor'>BitXor</a>&lt;Y::Element&gt; + <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a>, Y::Element: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a>, <a class='struct' href='../parry/iterators/struct.Caret.html' title='parry::iterators::Caret'>Caret</a>::Output: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Send.html' title='core::marker::Send'>Send</a></span></code></h3><div class='impl-items'><h4 id='assoc_type.Element' class='type'><code>type Element = <a class='struct' href='../parry/iterators/struct.Caret.html' title='parry::iterators::Caret'>Caret</a>::Output</code></h4>
+<h4 id='assoc_type.Values' class='type'><code>type Values = <a class='struct' href='../parry/iterators/struct.Binary.html' title='parry::iterators::Binary'>Binary</a>&lt;<a class='struct' href='../parry/iterators/struct.Caret.html' title='parry::iterators::Caret'>Caret</a>, X::Values, Y::Values&gt;</code></h4>
+<h4 id='assoc_type.Rev' class='type'><code>type Rev = <a class='struct' href='../parry/struct.BitXor.html' title='parry::BitXor'>BitXor</a>&lt;X::Rev, Y::Rev&gt;</code></h4>
+<h4 id='method.length' class='method'><code>fn <a href='../parry/trait.Expression.html#method.length' class='fnname'>length</a>(&amp;self) -&gt; <a class='enum' href='../parry/enum.Length.html' title='parry::Length'>Length</a></code></h4>
+<h4 id='method.values' class='method'><code>fn <a href='../parry/trait.Expression.html#method.values' class='fnname'>values</a>(self) -&gt; Self::<a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Values</a></code></h4>
+<h4 id='method.split' class='method'><code>fn <a href='../parry/trait.Expression.html#method.split' class='fnname'>split</a>(self, round_up: <a href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>) -&gt; <a href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(Self, Self)</a></code></h4>
+<h4 id='method.rev' class='method'><code>fn <a href='../parry/trait.Expression.html#method.rev' class='fnname'>rev</a>(self) -&gt; Self::<a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Rev</a></code></h4>
+<h4 id='method.sum' class='method'><code>fn <a href='../parry/trait.Expression.html#method.sum' class='fnname'>sum</a>&lt;T&gt;(self) -&gt; Self::<a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Element</a> <span class='where'>where Self: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a> + <a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Expression</a>&lt;Element=T&gt;, T: <a class='trait' href='../num/traits/trait.Zero.html' title='num::traits::Zero'>Zero</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Add.html' title='core::ops::Add'>Add</a>&lt;T, Output=T&gt;</span></code></h4>
+<h4 id='method.max' class='method'><code>fn <a href='../parry/trait.Expression.html#method.max' class='fnname'>max</a>(self) -&gt; <a class='struct' href='../parry/evaluation/struct.Max.html' title='parry::evaluation::Max'>Max</a>::Output <span class='where'>where Self: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a>, <a class='struct' href='../parry/evaluation/struct.Max.html' title='parry::evaluation::Max'>Max</a>: <a class='trait' href='../parry/evaluation/trait.Reduce.html' title='parry::evaluation::Reduce'>Reduce</a>&lt;Self::<a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Element</a>&gt;</span></code></h4>
+<h4 id='method.min' class='method'><code>fn <a href='../parry/trait.Expression.html#method.min' class='fnname'>min</a>(self) -&gt; <a class='struct' href='../parry/evaluation/struct.Min.html' title='parry::evaluation::Min'>Min</a>::Output <span class='where'>where Self: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a>, <a class='struct' href='../parry/evaluation/struct.Min.html' title='parry::evaluation::Min'>Min</a>: <a class='trait' href='../parry/evaluation/trait.Reduce.html' title='parry::evaluation::Reduce'>Reduce</a>&lt;Self::<a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Element</a>&gt;</span></code></h4>
+<h4 id='method.zip' class='method'><code>fn <a href='../parry/trait.Expression.html#method.zip' class='fnname'>zip</a>&lt;E2: <a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Expression</a>&gt;(self, e: E2) -&gt; <a class='struct' href='../parry/struct.Zip.html' title='parry::Zip'>Zip</a>&lt;Self, E2&gt; <span class='where'>where Self: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a></span></code></h4>
+<h4 id='method.map' class='method'><code>fn <a href='../parry/trait.Expression.html#method.map' class='fnname'>map</a>&lt;O, F: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.FnMut.html' title='core::ops::FnMut'>FnMut</a>(Self::<a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Element</a>) -&gt; O&gt;(self, f: F) -&gt; <a class='struct' href='../parry/struct.Map.html' title='parry::Map'>Map</a>&lt;Self, F&gt; <span class='where'>where Self: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a></span></code></h4>
+<h4 id='method.switch' class='method'><code>fn <a href='../parry/trait.Expression.html#method.switch' class='fnname'>switch</a>&lt;T, E&gt;(self, then: T, else_: E) -&gt; <a class='struct' href='../parry/struct.Switch.html' title='parry::Switch'>Switch</a>&lt;Self, T, E&gt; <span class='where'>where Self: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a> + <a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Expression</a>&lt;Element=<a href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>&gt;, T: <a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Expression</a>, E: <a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Expression</a>&lt;Element=T::Element&gt;</span></code></h4>
+<h4 id='method.eq' class='method'><code>fn <a href='../parry/trait.Expression.html#method.eq' class='fnname'>eq</a>&lt;E&gt;(self, other: E) -&gt; <a class='struct' href='../parry/struct.Eq.html' title='parry::Eq'>Eq</a>&lt;Self, E&gt; <span class='where'>where Self: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a>, E: <a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Expression</a>, Self::<a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Element</a>: <a class='trait' href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html' title='core::cmp::PartialEq'>PartialEq</a>&lt;E::Element&gt;</span></code></h4>
+<h4 id='method.ne' class='method'><code>fn <a href='../parry/trait.Expression.html#method.ne' class='fnname'>ne</a>&lt;E&gt;(self, other: E) -&gt; <a class='struct' href='../parry/struct.Ne.html' title='parry::Ne'>Ne</a>&lt;Self, E&gt; <span class='where'>where Self: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a>, E: <a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Expression</a>, Self::<a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Element</a>: <a class='trait' href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html' title='core::cmp::PartialEq'>PartialEq</a>&lt;E::Element&gt;</span></code></h4>
+<h4 id='method.lt' class='method'><code>fn <a href='../parry/trait.Expression.html#method.lt' class='fnname'>lt</a>&lt;E&gt;(self, other: E) -&gt; <a class='struct' href='../parry/struct.Lt.html' title='parry::Lt'>Lt</a>&lt;Self, E&gt; <span class='where'>where Self: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a>, E: <a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Expression</a>, Self::<a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Element</a>: <a class='trait' href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.html' title='core::cmp::PartialOrd'>PartialOrd</a>&lt;E::Element&gt;</span></code></h4>
+<h4 id='method.le' class='method'><code>fn <a href='../parry/trait.Expression.html#method.le' class='fnname'>le</a>&lt;E&gt;(self, other: E) -&gt; <a class='struct' href='../parry/struct.Le.html' title='parry::Le'>Le</a>&lt;Self, E&gt; <span class='where'>where Self: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a>, E: <a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Expression</a>, Self::<a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Element</a>: <a class='trait' href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.html' title='core::cmp::PartialOrd'>PartialOrd</a>&lt;E::Element&gt;</span></code></h4>
+<h4 id='method.gt' class='method'><code>fn <a href='../parry/trait.Expression.html#method.gt' class='fnname'>gt</a>&lt;E&gt;(self, other: E) -&gt; <a class='struct' href='../parry/struct.Gt.html' title='parry::Gt'>Gt</a>&lt;Self, E&gt; <span class='where'>where Self: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a>, E: <a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Expression</a>, Self::<a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Element</a>: <a class='trait' href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.html' title='core::cmp::PartialOrd'>PartialOrd</a>&lt;E::Element&gt;</span></code></h4>
+<h4 id='method.ge' class='method'><code>fn <a href='../parry/trait.Expression.html#method.ge' class='fnname'>ge</a>&lt;E&gt;(self, other: E) -&gt; <a class='struct' href='../parry/struct.Ge.html' title='parry::Ge'>Ge</a>&lt;Self, E&gt; <span class='where'>where Self: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a>, E: <a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Expression</a>, Self::<a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Element</a>: <a class='trait' href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.html' title='core::cmp::PartialOrd'>PartialOrd</a>&lt;E::Element&gt;</span></code></h4>
+</div><h3 class='impl'><code>impl&lt;X, Y&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Not.html' title='core::ops::Not'>Not</a> for <a class='struct' href='../parry/struct.BitXor.html' title='parry::BitXor'>BitXor</a>&lt;X, Y&gt; <span class='where'>where <a class='struct' href='../parry/struct.BitXor.html' title='parry::BitXor'>BitXor</a>&lt;X, Y&gt;: <a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Expression</a>, <a class='struct' href='../parry/struct.BitXor.html' title='parry::BitXor'>BitXor</a>&lt;X, Y&gt;::Element: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Not.html' title='core::ops::Not'>Not</a></span></code></h3><div class='impl-items'><h4 id='assoc_type.Output' class='type'><code>type Output = <a class='struct' href='../parry/struct.Not.html' title='parry::Not'>Not</a>&lt;Self&gt;</code></h4>
+<h4 id='method.not' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Not.html#method.not' class='fnname'>not</a>(self) -&gt; Self::<a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Not.html' title='core::ops::Not'>Output</a></code></h4>
+</div><h3 class='impl'><code>impl&lt;X, Y&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Neg.html' title='core::ops::Neg'>Neg</a> for <a class='struct' href='../parry/struct.BitXor.html' title='parry::BitXor'>BitXor</a>&lt;X, Y&gt; <span class='where'>where <a class='struct' href='../parry/struct.BitXor.html' title='parry::BitXor'>BitXor</a>&lt;X, Y&gt;: <a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Expression</a>, <a class='struct' href='../parry/struct.BitXor.html' title='parry::BitXor'>BitXor</a>&lt;X, Y&gt;::Element: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Neg.html' title='core::ops::Neg'>Neg</a></span></code></h3><div class='impl-items'><h4 id='assoc_type.Output' class='type'><code>type Output = <a class='struct' href='../parry/struct.Neg.html' title='parry::Neg'>Neg</a>&lt;Self&gt;</code></h4>
+<h4 id='method.neg' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Neg.html#method.neg' class='fnname'>neg</a>(self) -&gt; Self::<a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Neg.html' title='core::ops::Neg'>Output</a></code></h4>
+</div><h3 class='impl'><code>impl&lt;X, Y, Rhs&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Add.html' title='core::ops::Add'>Add</a>&lt;Rhs&gt; for <a class='struct' href='../parry/struct.BitXor.html' title='parry::BitXor'>BitXor</a>&lt;X, Y&gt; <span class='where'>where <a class='struct' href='../parry/struct.BitXor.html' title='parry::BitXor'>BitXor</a>&lt;X, Y&gt;: <a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Expression</a>, Rhs: <a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Expression</a>, <a class='struct' href='../parry/struct.BitXor.html' title='parry::BitXor'>BitXor</a>&lt;X, Y&gt;::Element: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Add.html' title='core::ops::Add'>Add</a>&lt;Rhs::Element&gt;</span></code></h3><div class='impl-items'><h4 id='assoc_type.Output' class='type'><code>type Output = <a class='struct' href='../parry/struct.Add.html' title='parry::Add'>Add</a>&lt;Self, Rhs&gt;</code></h4>
+<h4 id='method.add' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Add.html#method.add' class='fnname'>add</a>(self, other: Rhs) -&gt; Self::<a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Add.html' title='core::ops::Add'>Output</a></code></h4>
+</div><h3 class='impl'><code>impl&lt;X, Y, Rhs&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Sub.html' title='core::ops::Sub'>Sub</a>&lt;Rhs&gt; for <a class='struct' href='../parry/struct.BitXor.html' title='parry::BitXor'>BitXor</a>&lt;X, Y&gt; <span class='where'>where <a class='struct' href='../parry/struct.BitXor.html' title='parry::BitXor'>BitXor</a>&lt;X, Y&gt;: <a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Expression</a>, Rhs: <a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Expression</a>, <a class='struct' href='../parry/struct.BitXor.html' title='parry::BitXor'>BitXor</a>&lt;X, Y&gt;::Element: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Sub.html' title='core::ops::Sub'>Sub</a>&lt;Rhs::Element&gt;</span></code></h3><div class='impl-items'><h4 id='assoc_type.Output' class='type'><code>type Output = <a class='struct' href='../parry/struct.Sub.html' title='parry::Sub'>Sub</a>&lt;Self, Rhs&gt;</code></h4>
+<h4 id='method.sub' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Sub.html#method.sub' class='fnname'>sub</a>(self, other: Rhs) -&gt; Self::<a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Sub.html' title='core::ops::Sub'>Output</a></code></h4>
+</div><h3 class='impl'><code>impl&lt;X, Y, Rhs&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Mul.html' title='core::ops::Mul'>Mul</a>&lt;Rhs&gt; for <a class='struct' href='../parry/struct.BitXor.html' title='parry::BitXor'>BitXor</a>&lt;X, Y&gt; <span class='where'>where <a class='struct' href='../parry/struct.BitXor.html' title='parry::BitXor'>BitXor</a>&lt;X, Y&gt;: <a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Expression</a>, Rhs: <a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Expression</a>, <a class='struct' href='../parry/struct.BitXor.html' title='parry::BitXor'>BitXor</a>&lt;X, Y&gt;::Element: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Mul.html' title='core::ops::Mul'>Mul</a>&lt;Rhs::Element&gt;</span></code></h3><div class='impl-items'><h4 id='assoc_type.Output' class='type'><code>type Output = <a class='struct' href='../parry/struct.Mul.html' title='parry::Mul'>Mul</a>&lt;Self, Rhs&gt;</code></h4>
+<h4 id='method.mul' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Mul.html#method.mul' class='fnname'>mul</a>(self, other: Rhs) -&gt; Self::<a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Mul.html' title='core::ops::Mul'>Output</a></code></h4>
+</div><h3 class='impl'><code>impl&lt;X, Y, Rhs&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Div.html' title='core::ops::Div'>Div</a>&lt;Rhs&gt; for <a class='struct' href='../parry/struct.BitXor.html' title='parry::BitXor'>BitXor</a>&lt;X, Y&gt; <span class='where'>where <a class='struct' href='../parry/struct.BitXor.html' title='parry::BitXor'>BitXor</a>&lt;X, Y&gt;: <a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Expression</a>, Rhs: <a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Expression</a>, <a class='struct' href='../parry/struct.BitXor.html' title='parry::BitXor'>BitXor</a>&lt;X, Y&gt;::Element: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Div.html' title='core::ops::Div'>Div</a>&lt;Rhs::Element&gt;</span></code></h3><div class='impl-items'><h4 id='assoc_type.Output' class='type'><code>type Output = <a class='struct' href='../parry/struct.Div.html' title='parry::Div'>Div</a>&lt;Self, Rhs&gt;</code></h4>
+<h4 id='method.div' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Div.html#method.div' class='fnname'>div</a>(self, other: Rhs) -&gt; Self::<a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Div.html' title='core::ops::Div'>Output</a></code></h4>
+</div><h3 class='impl'><code>impl&lt;X, Y, Rhs&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.BitOr.html' title='core::ops::BitOr'>BitOr</a>&lt;Rhs&gt; for <a class='struct' href='../parry/struct.BitXor.html' title='parry::BitXor'>BitXor</a>&lt;X, Y&gt; <span class='where'>where <a class='struct' href='../parry/struct.BitXor.html' title='parry::BitXor'>BitXor</a>&lt;X, Y&gt;: <a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Expression</a>, Rhs: <a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Expression</a>, <a class='struct' href='../parry/struct.BitXor.html' title='parry::BitXor'>BitXor</a>&lt;X, Y&gt;::Element: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.BitOr.html' title='core::ops::BitOr'>BitOr</a>&lt;Rhs::Element&gt;</span></code></h3><div class='impl-items'><h4 id='assoc_type.Output' class='type'><code>type Output = <a class='struct' href='../parry/struct.BitOr.html' title='parry::BitOr'>BitOr</a>&lt;Self, Rhs&gt;</code></h4>
+<h4 id='method.bitor' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.BitOr.html#method.bitor' class='fnname'>bitor</a>(self, other: Rhs) -&gt; Self::<a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.BitOr.html' title='core::ops::BitOr'>Output</a></code></h4>
+</div><h3 class='impl'><code>impl&lt;X, Y, Rhs&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.BitAnd.html' title='core::ops::BitAnd'>BitAnd</a>&lt;Rhs&gt; for <a class='struct' href='../parry/struct.BitXor.html' title='parry::BitXor'>BitXor</a>&lt;X, Y&gt; <span class='where'>where <a class='struct' href='../parry/struct.BitXor.html' title='parry::BitXor'>BitXor</a>&lt;X, Y&gt;: <a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Expression</a>, Rhs: <a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Expression</a>, <a class='struct' href='../parry/struct.BitXor.html' title='parry::BitXor'>BitXor</a>&lt;X, Y&gt;::Element: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.BitAnd.html' title='core::ops::BitAnd'>BitAnd</a>&lt;Rhs::Element&gt;</span></code></h3><div class='impl-items'><h4 id='assoc_type.Output' class='type'><code>type Output = <a class='struct' href='../parry/struct.BitAnd.html' title='parry::BitAnd'>BitAnd</a>&lt;Self, Rhs&gt;</code></h4>
+<h4 id='method.bitand' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.BitAnd.html#method.bitand' class='fnname'>bitand</a>(self, other: Rhs) -&gt; Self::<a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.BitAnd.html' title='core::ops::BitAnd'>Output</a></code></h4>
+</div><h3 class='impl'><code>impl&lt;X, Y, Rhs&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.BitXor.html' title='core::ops::BitXor'>BitXor</a>&lt;Rhs&gt; for <a class='struct' href='../parry/struct.BitXor.html' title='parry::BitXor'>BitXor</a>&lt;X, Y&gt; <span class='where'>where <a class='struct' href='../parry/struct.BitXor.html' title='parry::BitXor'>BitXor</a>&lt;X, Y&gt;: <a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Expression</a>, Rhs: <a class='trait' href='../parry/trait.Expression.html' title='parry::Expression'>Expression</a>, <a class='struct' href='../parry/struct.BitXor.html' title='parry::BitXor'>BitXor</a>&lt;X, Y&gt;::Element: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.BitXor.html' title='core::ops::BitXor'>BitXor</a>&lt;Rhs::Element&gt;</span></code></h3><div class='impl-items'><h4 id='assoc_type.Output' class='type'><code>type Output = <a class='struct' href='../parry/struct.BitXor.html' title='parry::BitXor'>BitXor</a>&lt;Self, Rhs&gt;</code></h4>
+<h4 id='method.bitxor' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.BitXor.html#method.bitxor' class='fnname'>bitxor</a>(self, other: Rhs) -&gt; Self::<a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.BitXor.html' title='core::ops::BitXor'>Output</a></code></h4>
+</div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl&lt;X: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a>, Y: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a>&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../parry/struct.BitXor.html' title='parry::BitXor'>BitXor</a>&lt;X, Y&gt;</code></h3><div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../parry/struct.BitXor.html' title='parry::BitXor'>BitXor</a>&lt;X, Y&gt;</code></h4>
+<h4 id='method.clone_from' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
+</div><h3 class='impl'><code>impl&lt;X: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html' title='core::marker::Copy'>Copy</a>, Y: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html' title='core::marker::Copy'>Copy</a>&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html' title='core::marker::Copy'>Copy</a> for <a class='struct' href='../parry/struct.BitXor.html' title='parry::BitXor'>BitXor</a>&lt;X, Y&gt;</code></h3><div class='impl-items'></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "parry";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    
+    <script async src="../search-index.js"></script>
+</body>
+</html>

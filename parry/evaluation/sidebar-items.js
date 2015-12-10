@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["evaluate",""]],"struct":[["Max",""],["Min",""],["SetArray",""],["Sum",""]],"trait":[["Reduce",""],["ReduceScalar",""]]});
