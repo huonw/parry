@@ -7,7 +7,7 @@ fn test<E>(e: E, expected: &[E::Element])
 
 {
     let mut out = expected.to_owned();
-    parry::evaluate(&mut out, e);
+    e.write(&mut out);
     assert_eq!(out, expected);
 }
 

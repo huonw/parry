@@ -7,10 +7,10 @@ fn test<E>(e: E, expected: &[E::Element])
 
 {
     let mut out = expected.to_owned();
-    parry::evaluate(&mut out, e.clone());
+    e.clone().write(&mut out);
     assert_eq!(out, expected);
 
-    parry::evaluate(&mut out, e.rev());
+    e.rev().write(&mut out);
     out.reverse();
     assert_eq!(out, expected);
 }

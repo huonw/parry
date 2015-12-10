@@ -19,12 +19,6 @@ pub use simple::{E, Constant, Switch, Rev};
 mod evaluation;
 pub mod reduce;
 
-pub fn evaluate<E>(dst: &mut [E::Element], e: E)
-    where E: Expression
-{
-    evaluation::evaluate(e, reduce::SetArray(dst))
-}
-
 #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Length {
     Finite(usize),
@@ -52,6 +46,12 @@ pub trait Expression: Send {
     fn split(self, round_up: bool) -> (Self, Self);
 
     fn rev(self) -> Self::Rev;
+
+    fn write(self, out: &mut [Self::Element])
+        where Self: Sized
+    {
+        evaluation::evaluate(self, reduce::SetArray(out))
+    }
 
     fn sum<T>(self) -> Self::Element
         where Self: Sized + Expression<Element = T>, T: num::Zero + ops::Add<T, Output = T>
