@@ -1,4 +1,4 @@
-use std::ops;
+use std::{cmp, ops};
 
 pub struct Plus;
 pub struct Minus;
@@ -9,14 +9,21 @@ pub struct Ampersand;
 pub struct Caret;
 pub struct Bang;
 
+pub struct EqEq;
+pub struct BangEq;
+pub struct LessThan;
+pub struct LessThanEq;
+pub struct GreaterThan;
+pub struct GreaterThanEq;
+
 pub struct Tuple;
 
-trait UnOp<A> {
+pub trait UnOp<A> {
     type Output;
     fn operate(&self, a: A) -> Self::Output;
 }
 
-trait BinOp<A, B> {
+pub trait BinOp<A, B> {
     type Output;
     fn operate(&self, a: A, b: B) -> Self::Output;
 }
@@ -52,6 +59,22 @@ macro_rules! bin_op {
     }
 }
 
+macro_rules! cmp_op {
+    ($($ty: ty, $trayt: ident, $method: ident;)*) => {
+        $(
+            impl<A, B> BinOp<A, B> for $ty
+                where A: cmp::$trayt<B>
+            {
+                type Output = bool;
+
+                fn operate(&self, a: A, b: B) -> Self::Output {
+                    cmp::$trayt::$method(&a, &b)
+                }
+            }
+            )*
+    }
+}
+
 un_op! {
     Minus, Neg, neg;
     Bang, Not, not;
@@ -64,6 +87,14 @@ bin_op! {
     Pipe, BitOr, bitor;
     Ampersand, BitAnd, bitand;
     Caret, BitXor, bitxor;
+}
+cmp_op! {
+    EqEq, PartialEq, eq;
+    BangEq, PartialEq, ne;
+    LessThan, PartialOrd, lt;
+    LessThanEq, PartialOrd, le;
+    GreaterThan, PartialOrd, gt;
+    GreaterThanEq, PartialOrd, ge;
 }
 
 impl<A, B> BinOp<A,B> for Tuple {

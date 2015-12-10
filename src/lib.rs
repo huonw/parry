@@ -5,7 +5,8 @@ use std::cmp;
 mod operator;
 pub use operator::{Neg, Not,
                    Add, Sub, Mul, Div,
-                   BitOr, BitAnd, BitXor};
+                   BitOr, BitAnd, BitXor,
+                   Eq, Ne, Lt, Le, Gt, Ge};
 mod raw;
 pub use raw::{Zip, Map};
 
@@ -85,5 +86,41 @@ pub trait Expression {
         where Self: Sized + Expression<Element = bool>, T: Expression, E: Expression<Element = T::Element>
     {
         simple::make_switch(self, then, else_)
+    }
+
+    fn eq<E>(self, other: E) -> Eq<Self, E>
+        where Self: Sized, E: Expression, Self::Element: PartialEq<E::Element>,
+    {
+        operator::make_eq(self, other)
+    }
+
+    fn ne<E>(self, other: E) -> Ne<Self, E>
+        where Self: Sized, E: Expression, Self::Element: PartialEq<E::Element>,
+    {
+        operator::make_ne(self, other)
+    }
+
+    fn lt<E>(self, other: E) -> Lt<Self, E>
+        where Self: Sized, E: Expression, Self::Element: PartialOrd<E::Element>,
+    {
+        operator::make_lt(self, other)
+    }
+
+    fn le<E>(self, other: E) -> Le<Self, E>
+        where Self: Sized, E: Expression, Self::Element: PartialOrd<E::Element>,
+    {
+        operator::make_le(self, other)
+    }
+
+    fn gt<E>(self, other: E) -> Gt<Self, E>
+        where Self: Sized, E: Expression, Self::Element: PartialOrd<E::Element>,
+    {
+        operator::make_gt(self, other)
+    }
+
+    fn ge<E>(self, other: E) -> Ge<Self, E>
+        where Self: Sized, E: Expression, Self::Element: PartialOrd<E::Element>,
+    {
+        operator::make_ge(self, other)
     }
 }

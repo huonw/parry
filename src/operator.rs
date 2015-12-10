@@ -1,7 +1,8 @@
-pub use iterators::{Binary, Unary,
+pub use iterators::{Binary, Unary, BinOp,
                     Bang,
-                    Plus, Minus, Times, Divide, Pipe, Ampersand, Caret};
-use {Expression, Constant, Value, Length};
+                    Plus, Minus, Times, Divide, Pipe, Ampersand, Caret,
+                    EqEq, BangEq, LessThan, LessThanEq, GreaterThan, GreaterThanEq};
+use {Expression, Constant, Value, Length, Switch};
 use raw::{Zip, Map};
 use std::{cmp, ops};
 
@@ -41,7 +42,7 @@ un_op_struct! {
 }
 
 macro_rules! bin_op_struct {
-    ($($name: ident, $op: ident;)*) => {
+    ($($name: ident, $module: ident :: $trayt: ident, $op: ident;)*) => {
         $(
             #[derive(Copy, Clone)]
             pub struct $name<X, Y>(X, Y);
@@ -49,10 +50,10 @@ macro_rules! bin_op_struct {
             impl<X, Y> Expression for $name<X, Y>
                 where X: Expression,
                       Y: Expression,
-                      X::Element: ops::$name<Y::Element> + Clone,
+                      X::Element: $module::$trayt<Y::Element> + Clone,
                       Y::Element: Clone
             {
-                type Element = <X::Element as ops::$name<Y::Element>>::Output;
+                type Element = <$op as BinOp<X::Element, Y::Element>>::Output;
                 type Values = Binary<$op, X::Values, Y::Values>;
 
                 fn len(&self) -> Length {
@@ -77,13 +78,38 @@ macro_rules! bin_op_struct {
 }
 
 bin_op_struct! {
-    Add, Plus;
-    Sub, Minus;
-    Mul, Times;
-    Div, Divide;
-    BitOr, Pipe;
-    BitAnd, Ampersand;
-    BitXor, Caret;
+    Add, ops::Add, Plus;
+    Sub, ops::Sub, Minus;
+    Mul, ops::Mul, Times;
+    Div, ops::Div, Divide;
+    BitOr, ops::BitOr, Pipe;
+    BitAnd, ops::BitAnd, Ampersand;
+    BitXor, ops::BitXor, Caret;
+    Eq, cmp::PartialEq, EqEq;
+    Ne, cmp::PartialEq, BangEq;
+    Lt, cmp::PartialOrd, LessThan;
+    Le, cmp::PartialOrd, LessThanEq;
+    Gt, cmp::PartialOrd, GreaterThan;
+    Ge, cmp::PartialOrd, GreaterThanEq;
+}
+
+macro_rules! cmp_ctor {
+    ($($name: ident, $fn_name: ident;)*) => {
+        $(
+            pub fn $fn_name<E1: Expression, E2: Expression>(e1: E1, e2: E2) -> $name<E1, E2> {
+                $name(e1, e2)
+            }
+            )*
+    }
+}
+
+cmp_ctor! {
+    Eq, make_eq;
+    Ne, make_ne;
+    Lt, make_lt;
+    Le, make_le;
+    Gt, make_gt;
+    Ge, make_ge;
 }
 
 macro_rules! item { ($i: item) => { $i } }
@@ -159,4 +185,5 @@ impls! {
     <X, Y> BitXor<X, Y>,
     <X, Y> Zip<X, Y>,
     <X, F> Map<X, F>,
+    <B, T, E_> Switch<B, T, E_>,
 }
