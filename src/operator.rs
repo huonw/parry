@@ -2,7 +2,7 @@ pub use iterators::{Binary, Unary, BinOp,
                     Bang,
                     Plus, Minus, Times, Divide, Pipe, Ampersand, Caret,
                     EqEq, BangEq, LessThan, LessThanEq, GreaterThan, GreaterThanEq};
-use {Expression, Constant, E, Length, Switch};
+use {Expression, Constant, E, Length, Switch, Rev};
 use raw::{Zip, Map};
 use std::{cmp, ops};
 
@@ -19,6 +19,7 @@ macro_rules! un_op_struct {
             {
                 type Element = <X::Element as ops::$name>::Output;
                 type Values = Unary<$op, X::Values>;
+                type Rev = $name<X::Rev>;
 
                 fn length(&self) -> Length {
                     self.0.length()
@@ -28,9 +29,13 @@ macro_rules! un_op_struct {
                     Unary::new($op, self.0.values())
                 }
 
-                fn split(self) -> (Self, Self) {
-                    let (x1, x2) = self.0.split();
+                fn split(self, round_up: bool) -> (Self, Self) {
+                    let (x1, x2) = self.0.split(round_up);
                     ($name(x1), $name(x2))
+                }
+
+                fn rev(self) -> Self::Rev {
+                    $name(self.0.rev())
                 }
             }
             )*
@@ -57,6 +62,7 @@ macro_rules! bin_op_struct {
             {
                 type Element = <$op as BinOp<X::Element, Y::Element>>::Output;
                 type Values = Binary<$op, X::Values, Y::Values>;
+                type Rev = $name<X::Rev, Y::Rev>;
 
                 fn length(&self) -> Length {
                     let len1 = self.0.length();
@@ -69,10 +75,15 @@ macro_rules! bin_op_struct {
                     Binary::new($op, self.0.values(), self.1.values())
                 }
 
-                fn split(self) -> (Self, Self) {
-                    let (x1, x2) = self.0.split();
-                    let (y1, y2) = self.1.split();
+                fn split(self, round_up: bool) -> (Self, Self) {
+                    let (x1, x2) = self.0.split(round_up);
+                    let (y1, y2) = self.1.split(round_up);
                     ($name(x1, y1), $name(x2, y2))
+                }
+
+                fn rev(self) -> Self::Rev {
+                    $name(self.0.rev(),
+                          self.1.rev())
                 }
             }
             )*
@@ -178,6 +189,7 @@ impls! {
     ]
     <T> Constant<T>,
     <T> E<T>,
+    <T> Rev<T>,
     <X, Y> Add<X, Y>,
     <X, Y> Sub<X, Y>,
     <X, Y> Mul<X, Y>,

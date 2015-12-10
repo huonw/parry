@@ -14,7 +14,7 @@ pub use raw::{Zip, Map};
 pub mod iterators;
 
 mod simple;
-pub use simple::{E, Constant, Switch};
+pub use simple::{E, Constant, Switch, Rev};
 
 mod evaluation;
 
@@ -41,13 +41,16 @@ impl Length {
 
 pub trait Expression: Send {
     type Element: Send;
-    type Values: Iterator<Item = Self::Element>;
+    type Values: Iterator<Item = Self::Element> + DoubleEndedIterator;
+    type Rev: Expression<Element = Self::Element>;
 
     fn length(&self) -> Length;
 
     fn values(self) -> Self::Values;
 
-    fn split(self) -> (Self, Self);
+    fn split(self, round_up: bool) -> (Self, Self);
+
+    fn rev(self) -> Self::Rev;
 
     fn sum<T>(self) -> Self::Element
         where Self: Sized + Expression<Element = T>, T: num::Zero + ops::Add<T, Output = T>

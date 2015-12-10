@@ -44,7 +44,7 @@ fn eval_inner<E, R>(e: E, threshold: usize, mut reduce: R) -> R::Output
 
     if len > threshold {
         let (low, high, scalar) = reduce.split();
-        let (e_low, e_high) = e.split();
+        let (e_low, e_high) = e.split(false);
 
         let (a, b) = rayon::join(|| eval_inner(e_low, threshold, low),
                                  || eval_inner(e_high, threshold, high));

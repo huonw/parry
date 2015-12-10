@@ -19,6 +19,7 @@ pub fn make_map<X, F>(x: X, f: F) -> Map<X, F> {
 impl<X: Expression, Y: Expression> Expression for Zip<X, Y> {
     type Element = (X::Element, Y::Element);
     type Values = Binary<Tuple, X::Values, Y::Values>;
+    type Rev = Zip<X::Rev, Y::Rev>;
 
     fn length(&self) -> Length {
         let len1 = self.0.length();
@@ -31,16 +32,21 @@ impl<X: Expression, Y: Expression> Expression for Zip<X, Y> {
         Binary::new(Tuple, self.0.values(), self.1.values())
     }
 
-    fn split(self) -> (Self, Self) {
-        let (x1, x2) = self.0.split();
-        let (y1, y2) = self.1.split();
+    fn split(self, round_up: bool) -> (Self, Self) {
+        let (x1, x2) = self.0.split(round_up);
+        let (y1, y2) = self.1.split(round_up);
         (Zip(x1, y1), Zip(x2, y2))
+    }
+
+    fn rev(self) -> Self::Rev {
+        (Zip(self.0.rev(), self.1.rev()))
     }
 }
 
 impl<X: Expression, O: Send, F: Clone + FnMut(X::Element) -> O + Send> Expression for Map<X, F> {
     type Element = O;
     type Values = iter::Map<X::Values, F>;
+    type Rev = Map<X::Rev, F>;
 
     fn length(&self) -> Length {
         self.0.length()
@@ -50,9 +56,13 @@ impl<X: Expression, O: Send, F: Clone + FnMut(X::Element) -> O + Send> Expressio
         self.0.values().map(self.1)
     }
 
-    fn split(self) -> (Self, Self) {
-        let (x1, x2) = self.0.split();
+    fn split(self, round_up: bool) -> (Self, Self) {
+        let (x1, x2) = self.0.split(round_up);
         let f2 = self.1.clone();
         (Map(x1, self.1), Map(x2, f2))
+    }
+
+    fn rev(self) -> Self::Rev {
+        Map(self.0.rev(), self.1)
     }
 }

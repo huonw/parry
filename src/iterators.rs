@@ -133,6 +133,15 @@ impl<Op, X> Iterator for Unary<Op, X>
     }
 }
 
+impl<Op, X> DoubleEndedIterator for Unary<Op, X>
+    where Op: UnOp<X::Item>,
+          X: DoubleEndedIterator
+{
+    fn next_back(&mut self) -> Option<Self::Item> {
+        self.x.next_back().map(|a| self.op.operate(a))
+    }
+}
+
 pub struct Binary<Op, X, Y> {
     op: Op,
     x: X,
@@ -163,6 +172,15 @@ impl<Op, X, Y> Iterator for Binary<Op, X, Y>
     }
 }
 
+impl<Op, X, Y> DoubleEndedIterator for Binary<Op, X, Y>
+    where Op: BinOp<X::Item, Y::Item>,
+          X: DoubleEndedIterator, Y: DoubleEndedIterator
+{
+    fn next_back(&mut self) -> Option<Self::Item> {
+        self.x.next_back().and_then(|a| self.y.next().map(|b| self.op.operate(a, b)))
+    }
+}
+
 pub struct SwitchIter<B, T, E> {
     cond: B,
     then: T,
@@ -183,6 +201,17 @@ impl<B, T, E> Iterator for SwitchIter<B, T, E>
     type Item = T::Item;
 
     fn next(&mut self) -> Option<Self::Item> {
+        match (self.cond.next(), self.then.next(), self.else_.next()) {
+            (Some(c), Some(t), Some(e)) => Some(if c { t } else { e }),
+            _ => None
+        }
+    }
+}
+
+impl<B, T, E> DoubleEndedIterator for SwitchIter<B, T, E>
+    where B: DoubleEndedIterator<Item = bool>, T: DoubleEndedIterator, E: DoubleEndedIterator<Item = T::Item>
+{
+    fn next_back(&mut self) -> Option<Self::Item> {
         match (self.cond.next(), self.then.next(), self.else_.next()) {
             (Some(c), Some(t), Some(e)) => Some(if c { t } else { e }),
             _ => None
