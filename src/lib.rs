@@ -13,7 +13,7 @@ pub use raw::{Zip, Map};
 pub mod iterators;
 
 mod simple;
-pub use simple::{Value, Constant, Switch};
+pub use simple::{E, Constant, Switch};
 
 const MIN_THRESHOLD: usize = 1024;
 const MAX_COUNT: usize = 32;

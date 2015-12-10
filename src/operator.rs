@@ -2,7 +2,7 @@ pub use iterators::{Binary, Unary, BinOp,
                     Bang,
                     Plus, Minus, Times, Divide, Pipe, Ampersand, Caret,
                     EqEq, BangEq, LessThan, LessThanEq, GreaterThan, GreaterThanEq};
-use {Expression, Constant, Value, Length, Switch};
+use {Expression, Constant, E, Length, Switch};
 use raw::{Zip, Map};
 use std::{cmp, ops};
 
@@ -119,13 +119,13 @@ macro_rules! item { ($i: item) => { $i } }
 macro_rules! make_impl {
     (binary, $name: ident, $method: ident, <$($param: tt),*> $for_: ty) => {
         item! {
-            impl<$($param,)* E> ops::$name<E> for $for_
-                where $for_: Expression, E: Expression,
-                      <$for_ as Expression>::Element: ops::$name<E::Element>,
+            impl<$($param,)* Rhs> ops::$name<Rhs> for $for_
+                where $for_: Expression, Rhs: Expression,
+                      <$for_ as Expression>::Element: ops::$name<Rhs::Element>,
             {
-                type Output = $name<Self, E>;
+                type Output = $name<Self, Rhs>;
 
-                fn $method(self, other: E) -> Self::Output {
+                fn $method(self, other: Rhs) -> Self::Output {
                     assert!(self.length().compatible(other.length()));
                     $name(self, other)
                 }
@@ -177,7 +177,7 @@ impls! {
         binary, BitXor, bitxor;
     ]
     <T> Constant<T>,
-    <'a, T> Value<&'a [T]>,
+    <T> E<T>,
     <X, Y> Add<X, Y>,
     <X, Y> Sub<X, Y>,
     <X, Y> Mul<X, Y>,

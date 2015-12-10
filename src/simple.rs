@@ -23,23 +23,23 @@ impl<'a, T: 'a + Send + Clone> Expression for Constant<T> {
 }
 
 #[derive(Copy, Clone)]
-pub struct Value<T>(pub T);
+pub struct E<T>(pub T);
 
-impl<'a, T: 'a + Sync + Send + Clone> Expression for Value<&'a [T]> {
-    type Element = T;
-    type Values = iter::Cloned<slice::Iter<'a, T>>;
+impl<X: Expression> Expression for E<X> {
+    type Element = X::Element;
+    type Values = X::Values;
 
     fn length(&self) -> Length {
-        Length::Finite(self.0.len())
+        self.0.length()
     }
 
     fn values(self) -> Self::Values {
-        self.0.iter().cloned()
+        self.0.values()
     }
 
     fn split(self) -> (Self, Self) {
-        let (lo, hi) = self.0.split_at(self.0.len() / 2);
-        (Value(lo), Value(hi))
+        let (lo, hi) = self.0.split();
+        (E(lo), E(hi))
     }
 }
 
