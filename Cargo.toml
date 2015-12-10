@@ -6,10 +6,7 @@ version = "0.1.0"
 [dependencies]
 crossbeam = "0.1.6"
 num = "0.1.28"
-
-[dependencies.rayon]
-git = "https://github.com/nikomatsakis/rayon"
-optional = false
+rayon = "0.0.1"
 
 [features]
 test-everything = []
