@@ -60,6 +60,24 @@ impl<'a, T: 'a + Sync + Send + Clone> Expression for &'a [T] {
     }
 }
 
+impl<'a, T: 'a + Send> Expression for &'a mut [T] {
+    type Element = &'a mut T;
+    type Values = slice::IterMut<'a, T>;
+
+    fn length(&self) -> Length {
+        Length::Finite((**self).len())
+    }
+
+    fn values(self) -> Self::Values {
+        self.iter_mut()
+    }
+
+    fn split(self) -> (Self, Self) {
+        let len = (*self).len();
+        self.split_at_mut(len / 2)
+    }
+}
+
 pub struct Switch<B, T, E>(B, T, E);
 pub fn make_switch<B, T, E>(b: B, t: T, e: E) -> Switch<B, T, E>
     where B: Expression<Element = bool>,
