@@ -5,7 +5,7 @@ version = "0.1.0"
 
 [dependencies]
 crossbeam = "0.1.6"
-simple_parallel = "0.3.0"
+num = "0.1.28"
 
 [dependencies.rayon]
 git = "https://github.com/nikomatsakis/rayon"

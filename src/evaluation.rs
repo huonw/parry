@@ -1,8 +1,10 @@
 use std::{cmp, ops};
+use num::Zero;
+
 use rayon;
 use {Expression, Length};
 
-const MIN_THRESHOLD: usize = 1024;
+const MIN_THRESHOLD: usize = 4096;
 const MAX_COUNT: usize = 32;
 
 pub trait Reduce<T>: Send {
@@ -82,5 +84,30 @@ impl<'a, T> Reduce<T> for SetArray<'a, T>
         for (o, i) in self.0.iter_mut().zip(vals) {
             *o = i;
         }
+    }
+}
+
+pub struct Sum;
+impl<T> Reduce<T> for Sum
+    where T: Send + Zero + ops::Add<T, Output = T>
+{
+    type Output = T;
+    type Scalar = Sum;
+
+    fn expected_length(&self) -> Length { Length::Infinite }
+
+    fn split(self) -> (Sum, Sum, Sum) { (Sum, Sum, Sum) }
+
+    fn reduce<X>(&mut self, vals: X) -> Self::Output
+        where X: Iterator<Item = T>
+    {
+        vals.fold(Zero::zero(), |x, y| x + y)
+    }
+}
+impl<T> ReduceScalar<T> for Sum
+    where T: ops::Add<T, Output = T>
+{
+    fn combine(self, a: T, b: T) -> T {
+        a + b
     }
 }

@@ -1,6 +1,7 @@
 extern crate rayon;
+extern crate num;
 
-use std::cmp;
+use std::ops;
 
 mod operator;
 pub use operator::{Neg, Not,
@@ -47,6 +48,12 @@ pub trait Expression: Send {
     fn values(self) -> Self::Values;
 
     fn split(self) -> (Self, Self);
+
+    fn sum<T>(self) -> Self::Element
+        where Self: Sized + Expression<Element = T>, T: num::Zero + ops::Add<T, Output = T>
+    {
+        evaluation::evaluate(self, evaluation::Sum)
+    }
 
     // TODO: this need to handle SIMD etc.
     fn zip<E2: Expression>(self, e: E2) -> Zip<Self, E2> where Self: Sized {

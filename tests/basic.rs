@@ -173,3 +173,10 @@ fn switch() {
 
     test(c, &[0, 1, 12, 3]);
 }
+
+#[test]
+fn sum() {
+    let a = &[0, 1, 2, 3, 4, 5, 6, 7] as &[_];
+
+    assert_eq!(E(a).sum(), (0..8).fold(0, |a, b| a + b));
+}
