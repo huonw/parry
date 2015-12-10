@@ -3,6 +3,17 @@ authors = ["Huon Wilson <dbau.pp+github@gmail.com>"]
 name = "parry"
 version = "0.1.0"
 
+homepage = "https://github.com/huonw/parry"
+repository = "https://github.com/huonw/parry"
+documentation = "http://huonw.github.io/parry/parry/"
+license = "MIT/Apache-2.0"
+keywords = ["data-parallel", "array"]
+readme = "README.md"
+description = """
+Parallel array processing: deflect performance problems.
+"""
+
+
 [dependencies]
 crossbeam = "0.1.6"
 num = "0.1.28"
@@ -10,3 +21,4 @@ rayon = "0.0.1"
 
 [features]
 test-everything = []
+unstable = []
