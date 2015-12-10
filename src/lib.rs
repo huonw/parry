@@ -23,7 +23,7 @@ fn join<F: Send + FnOnce(), G: Send + FnOnce()>(f: F, g: G) {
 }
 
 pub fn evaluate<E>(dst: &mut [E::Element], e: E)
-    where E: Expression + Send, E::Element: Send
+    where E: Expression
 {
     let len = dst.len();
 
@@ -31,7 +31,7 @@ pub fn evaluate<E>(dst: &mut [E::Element], e: E)
 }
 
 fn eval_inner<E>(dst: &mut [E::Element], e: E, threshold: usize)
-    where E: Expression + Send, E::Element: Send
+    where E: Expression
 {
     let len = dst.len();
     assert!(e.len().compatible(Length::Finite(len)));
@@ -63,8 +63,8 @@ impl Length {
     }
 }
 
-pub trait Expression {
-    type Element;
+pub trait Expression: Send {
+    type Element: Send;
     type Values: Iterator<Item = Self::Element>;
 
     fn len(&self) -> Length;

@@ -14,7 +14,8 @@ macro_rules! un_op_struct {
 
             impl<X> Expression for $name<X>
                 where X: Expression,
-                      X::Element: ops::$name + Clone,
+                      X::Element: ops::$name + Clone + Send,
+                      <X::Element as ops::$name>::Output: Send,
             {
                 type Element = <X::Element as ops::$name>::Output;
                 type Values = Unary<$op, X::Values>;
@@ -51,7 +52,8 @@ macro_rules! bin_op_struct {
                 where X: Expression,
                       Y: Expression,
                       X::Element: $module::$trayt<Y::Element> + Clone,
-                      Y::Element: Clone
+                      Y::Element: Clone,
+                      <$op as BinOp<X::Element, Y::Element>>::Output: Send,
             {
                 type Element = <$op as BinOp<X::Element, Y::Element>>::Output;
                 type Values = Binary<$op, X::Values, Y::Values>;

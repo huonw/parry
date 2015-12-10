@@ -38,7 +38,7 @@ impl<X: Expression, Y: Expression> Expression for Zip<X, Y> {
     }
 }
 
-impl<X: Expression, O, F: Clone + FnMut(X::Element) -> O> Expression for Map<X, F> {
+impl<X: Expression, O: Send, F: Clone + FnMut(X::Element) -> O + Send> Expression for Map<X, F> {
     type Element = O;
     type Values = iter::Map<X::Values, F>;
 

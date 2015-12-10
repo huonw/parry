@@ -5,7 +5,7 @@ use iterators::SwitchIter;
 #[derive(Copy, Clone)]
 pub struct Constant<T>(pub T);
 
-impl<'a, T: 'a + Clone> Expression for Constant<T> {
+impl<'a, T: 'a + Send + Clone> Expression for Constant<T> {
     type Element = T;
     type Values = iter::Repeat<T>;
 
@@ -25,7 +25,7 @@ impl<'a, T: 'a + Clone> Expression for Constant<T> {
 #[derive(Copy, Clone)]
 pub struct Value<T>(pub T);
 
-impl<'a,T: 'a + Clone> Expression for Value<&'a [T]> {
+impl<'a, T: 'a + Sync + Send + Clone> Expression for Value<&'a [T]> {
     type Element = T;
     type Values = iter::Cloned<slice::Iter<'a, T>>;
 
@@ -43,7 +43,7 @@ impl<'a,T: 'a + Clone> Expression for Value<&'a [T]> {
     }
 }
 
-impl<'a, T: 'a + Clone> Expression for &'a [T] {
+impl<'a, T: 'a + Sync + Send + Clone> Expression for &'a [T] {
     type Element = T;
     type Values = iter::Cloned<slice::Iter<'a, T>>;
 
