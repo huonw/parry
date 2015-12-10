@@ -16,12 +16,13 @@ pub mod iterators;
 mod simple;
 pub use simple::{E, Constant, Switch, Rev};
 
-pub mod evaluation;
+mod evaluation;
+pub mod reduce;
 
 pub fn evaluate<E>(dst: &mut [E::Element], e: E)
     where E: Expression
 {
-    evaluation::evaluate(e, evaluation::SetArray(dst))
+    evaluation::evaluate(e, reduce::SetArray(dst))
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -55,18 +56,18 @@ pub trait Expression: Send {
     fn sum<T>(self) -> Self::Element
         where Self: Sized + Expression<Element = T>, T: num::Zero + ops::Add<T, Output = T>
     {
-        evaluation::evaluate(self, evaluation::Sum)
+        evaluation::evaluate(self, reduce::Sum)
     }
 
-    fn max(self) -> <evaluation::Max as evaluation::Reduce<Self::Element>>::Output
-        where Self: Sized, evaluation::Max: evaluation::Reduce<Self::Element>
+    fn max(self) -> <reduce::Max as reduce::Reduce<Self::Element>>::Output
+        where Self: Sized, reduce::Max: reduce::Reduce<Self::Element>
     {
-        evaluation::evaluate(self, evaluation::Max)
+        evaluation::evaluate(self, reduce::Max)
     }
-    fn min(self) -> <evaluation::Min as evaluation::Reduce<Self::Element>>::Output
-        where Self: Sized, evaluation::Min: evaluation::Reduce<Self::Element>
+    fn min(self) -> <reduce::Min as reduce::Reduce<Self::Element>>::Output
+        where Self: Sized, reduce::Min: reduce::Reduce<Self::Element>
     {
-        evaluation::evaluate(self, evaluation::Min)
+        evaluation::evaluate(self, reduce::Min)
     }
 
     // TODO: this need to handle SIMD etc.
