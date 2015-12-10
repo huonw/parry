@@ -32,5 +32,4 @@ after_success:
 
 env:
   global:
-    # encrypted github token for doc upload (see `GH_TOKEN` link above)
-    - secure: "..."
+    - secure: "QJcklq/kIF799FG3l8Bkz2He16lduFl7u8I96susOcvDSnFpnPY5UA3ex4/3HNVFyPYLcXiv/Ug6yHbTU1YTfvmOi/1jrySNrXqNEHOyGbXauiQCfp7n2wOcs3EtmTYefLV39y05DzMb7mcAn6vk8cjWLjbXiaYrqw7QEw4ZD5nGm+YpYGUg9jITzfiZzk1lyh16rmcrIwabmGHYF5INnW00N5zptr+M9VRdQlZGkijbzNLdLyNat8CyzCC9jfqLrkfPI+WOO4l2lEx5j0Yr1C05rfKTe0JUVwWVrDK73XunAo1gkeYxVV6yGAAO1wBKXl4PQJZuD/Er2RyknZ7n60DjEUZ236pmRj7oiaTEtzZZXCH9NOPRapoWKi1mqdbdpby8thQXlPj+mcY9v/MREuTZWS20zoZdyZbVx+p9MVXTbKn+muF3YdkBEru/Ko8KAb/YX26vqPw+Zjit5mLfiA/Qvoem4g2hYJIFDkGDZ3GljL7MdYGHIljASBrUNBdeDh6V3L6Nj3g5yQy15DdEc4q7OevTmLYvDa4hNLYwtbKQRTWee4aH30s4lV3Uc40JHf9XcwbzGHDnXtBuQnPwo4gYbSF+PL6CaSXyBuBJt4wm2TkBB1I5QOpgsyrqTkEIEuPdLqW8ezcMFo9AWisN+7T2/gHKYCCLBRF7LN5G1FA="
