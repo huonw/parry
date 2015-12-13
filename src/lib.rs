@@ -14,7 +14,10 @@ pub use raw::{Zip, Map};
 pub mod iterators;
 
 mod simple;
-pub use simple::{E, Constant, Switch, Rev};
+pub use simple::{E, Constant, Rev};
+
+mod switch;
+pub use switch::{Switch, SwitchOn};
 
 mod evaluation;
 pub mod reduce;
@@ -82,9 +85,9 @@ pub trait Expression: Send {
     }
 
     fn switch<T, E>(self, then: T, else_: E) -> Switch<Self, T, E>
-        where Self: Sized + Expression<Element = bool>, T: Expression, E: Expression<Element = T::Element>
+        where Self: Sized + Expression, Self::Element: SwitchOn<T::Element>, T: Expression, E: Expression<Element = T::Element>
     {
-        simple::make_switch(self, then, else_)
+        switch::make_switch(self, then, else_)
     }
 
     fn eq<E>(self, other: E) -> Eq<Self, E>

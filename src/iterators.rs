@@ -1,5 +1,7 @@
 use std::{cmp, ops};
 
+pub use switch::SwitchIter;
+
 pub struct Plus;
 pub struct Minus;
 pub struct Times;
@@ -178,43 +180,5 @@ impl<Op, X, Y> DoubleEndedIterator for Binary<Op, X, Y>
 {
     fn next_back(&mut self) -> Option<Self::Item> {
         self.x.next_back().and_then(|a| self.y.next().map(|b| self.op.operate(a, b)))
-    }
-}
-
-pub struct SwitchIter<B, T, E> {
-    cond: B,
-    then: T,
-    else_: E,
-}
-
-impl<B, T, E> SwitchIter<B, T, E>
-    where B: Iterator<Item = bool>, T: Iterator, E: Iterator<Item = T::Item>
-{
-    pub fn new(cond: B, then: T, else_: E) -> SwitchIter<B, T, E> {
-        SwitchIter { cond: cond, then: then, else_: else_ }
-    }
-}
-
-impl<B, T, E> Iterator for SwitchIter<B, T, E>
-    where B: Iterator<Item = bool>, T: Iterator, E: Iterator<Item = T::Item>
-{
-    type Item = T::Item;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        match (self.cond.next(), self.then.next(), self.else_.next()) {
-            (Some(c), Some(t), Some(e)) => Some(if c { t } else { e }),
-            _ => None
-        }
-    }
-}
-
-impl<B, T, E> DoubleEndedIterator for SwitchIter<B, T, E>
-    where B: DoubleEndedIterator<Item = bool>, T: DoubleEndedIterator, E: DoubleEndedIterator<Item = T::Item>
-{
-    fn next_back(&mut self) -> Option<Self::Item> {
-        match (self.cond.next(), self.then.next(), self.else_.next()) {
-            (Some(c), Some(t), Some(e)) => Some(if c { t } else { e }),
-            _ => None
-        }
     }
 }
