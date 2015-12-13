@@ -2,14 +2,14 @@ use std::ops;
 use num::Zero;
 use {Expression, Length};
 
-pub trait Reduce<T>: Send {
+pub trait Reduce<T: Send>: Send {
     type Output: Send;
     type Scalar: ReduceScalar<Self::Output>;
 
     fn expected_length(&self) -> Length;
     fn split(self) -> (Self, Self, Self::Scalar);
-    fn reduce<X>(self, X) -> Self::Output
-        where X: Iterator<Item = T>;
+    fn reduce<E>(self, E) -> Self::Output
+        where E: Expression<Element = T>;
 }
 
 pub trait ReduceScalar<X> {
@@ -38,10 +38,10 @@ impl<'a, E, T> Reduce<T> for Write<E>
         (Write(lo), Write(hi), ())
     }
 
-    fn reduce<X>(self, vals: X) -> Self::Output
-        where X: Iterator<Item = T>
+    fn reduce<E_>(self, e: E_) -> Self::Output
+        where E_: Expression<Element = T>
     {
-        for (o, i) in self.0.values().zip(vals) {
+        for (o, i) in self.0.values().zip(e.values()) {
             *o = i;
         }
     }
@@ -63,10 +63,10 @@ impl<T> Reduce<T> for Sum
 
     repeated!(Sum);
 
-    fn reduce<X>(self, vals: X) -> Self::Output
-        where X: Iterator<Item = T>
+    fn reduce<E>(self, e: E) -> Self::Output
+        where E: Expression<Element = T>
     {
-        vals.fold(Zero::zero(), |x, y| x + y)
+        e.values().fold(Zero::zero(), |x, y| x + y)
     }
 }
 impl<T> ReduceScalar<T> for Sum
@@ -87,9 +87,10 @@ macro_rules! minmax {
 
                 repeated!($name);
 
-                fn reduce<X>(self, mut vals: X) -> Self::Output
-                    where X: Iterator<Item = $f>
+                fn reduce<E>(self, e: E) -> Self::Output
+                    where E: Expression<Element = $f>,
                 {
+                    let mut vals = e.values();
                     vals.next().map(|first| vals.fold(first, |x, y| x.$method(y)))
                 }
             }

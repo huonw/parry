@@ -37,6 +37,6 @@ fn eval_inner<E, R>(e: E, threshold: usize, reduce: R) -> R::Output
 
         scalar.combine(a, b)
     } else {
-        reduce.reduce(e.values())
+        reduce.reduce(e)
     }
 }
