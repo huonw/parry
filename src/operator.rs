@@ -34,6 +34,11 @@ macro_rules! un_op_struct {
                     ($name(x1), $name(x2))
                 }
 
+                fn split_at(self, n: usize) -> (Self, Self) {
+                    let (x1, x2) = self.0.split_at(n);
+                    ($name(x1), $name(x2))
+                }
+
                 fn rev(self) -> Self::Rev {
                     $name(self.0.rev())
                 }
@@ -84,6 +89,12 @@ macro_rules! bin_op_struct {
                 fn rev(self) -> Self::Rev {
                     $name(self.0.rev(),
                           self.1.rev())
+                }
+
+                fn split_at(self, n: usize) -> (Self, Self) {
+                    let (x1, x2) = self.0.split_at(n);
+                    let (y1, y2) = self.1.split_at(n);
+                    ($name(x1, y1), $name(x2, y2))
                 }
             }
             )*

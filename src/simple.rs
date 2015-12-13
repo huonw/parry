@@ -25,6 +25,10 @@ impl<'a, T: 'a + Send + Clone> Expression for Constant<T> {
     fn rev(self) -> Self {
         self
     }
+
+    fn split_at(self, _n: usize) -> (Self, Self) {
+        (self.clone(), self)
+    }
 }
 
 #[derive(Copy, Clone)]
@@ -51,6 +55,11 @@ impl<X: Expression> Expression for E<X> {
     fn rev(self) -> Self::Rev {
         E(self.0.rev())
     }
+
+    fn split_at(self, n: usize) -> (Self, Self) {
+        let (lo, hi) = self.0.split_at(n);
+        (E(lo), E(hi))
+    }
 }
 
 impl<'a, T: 'a + Sync + Send + Clone> Expression for &'a [T] {
@@ -72,6 +81,10 @@ impl<'a, T: 'a + Sync + Send + Clone> Expression for &'a [T] {
 
     fn rev(self) -> Self::Rev {
         Rev(self)
+    }
+
+    fn split_at(self, n: usize) -> (Self, Self) {
+        (*self).split_at(n)
     }
 }
 
@@ -95,6 +108,10 @@ impl<'a, T: 'a + Send> Expression for &'a mut [T] {
 
     fn rev(self) -> Self::Rev {
         Rev(self)
+    }
+
+    fn split_at(self, n: usize) -> (Self, Self) {
+        (*self).split_at_mut(n)
     }
 }
 
@@ -141,6 +158,14 @@ impl<B, T, E> Expression for Switch<B, T, E>
     fn rev(self) -> Self::Rev {
         Switch(self.0.rev(), self.1.rev(), self.2.rev())
     }
+
+    fn split_at(self, n: usize) -> (Self, Self) {
+        let (b1, b2) = self.0.split_at(n);
+        let (t1, t2) = self.1.split_at(n);
+        let (e1, e2) = self.2.split_at(n);
+
+        (Switch(b1, t1, e1), Switch(b2, t2, e2))
+    }
 }
 
 #[derive(Copy, Clone)]
@@ -166,5 +191,14 @@ impl<T: Expression> Expression for Rev<T> {
 
     fn rev(self) -> T {
         self.0
+    }
+
+    fn split_at(self, n: usize) -> (Self, Self) {
+        let len = match self.length() {
+            Length::Finite(len) => len,
+            Length::Infinite => n // whatever
+        };
+        let (a, b) = self.0.split_at(len - n);
+        (Rev(b), Rev(a))
     }
 }

@@ -41,6 +41,12 @@ impl<X: Expression, Y: Expression> Expression for Zip<X, Y> {
     fn rev(self) -> Self::Rev {
         (Zip(self.0.rev(), self.1.rev()))
     }
+
+    fn split_at(self, n: usize) -> (Self, Self) {
+        let (x1, x2) = self.0.split_at(n);
+        let (y1, y2) = self.1.split_at(n);
+        (Zip(x1, y1), Zip(x2, y2))
+    }
 }
 
 impl<X: Expression, O: Send, F: Clone + FnMut(X::Element) -> O + Send> Expression for Map<X, F> {
@@ -64,5 +70,11 @@ impl<X: Expression, O: Send, F: Clone + FnMut(X::Element) -> O + Send> Expressio
 
     fn rev(self) -> Self::Rev {
         Map(self.0.rev(), self.1)
+    }
+
+    fn split_at(self, n: usize) -> (Self, Self) {
+        let (x1, x2) = self.0.split_at(n);
+        let f2 = self.1.clone();
+        (Map(x1, self.1), Map(x2, f2))
     }
 }

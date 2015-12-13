@@ -209,3 +209,15 @@ fn min() {
     assert_eq!(E(a).min(), Some(0.0));
     assert_eq!((-E(a)).min(), Some(-5.0));
 }
+
+#[test]
+fn split_at() {
+    let a = &[0, 1, 2, 3, 4, 5] as &[_];
+    let (b1, b2) = a.split_at(2);
+    test(b1, &[0, 1]);
+    test(b2, &[2, 3, 4, 5]);
+
+    let (b1, b2) = a.rev().split_at(2);
+    test(b1, &[5, 4]);
+    test(b2, &[3, 2, 1, 0]);
+}

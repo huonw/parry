@@ -47,6 +47,8 @@ pub trait Expression: Send {
 
     fn rev(self) -> Self::Rev;
 
+    fn split_at(self, n: usize) -> (Self, Self);
+
     fn write<'a, E>(self, out: E)
         where Self: Sized, Self::Element: 'a, E: Expression<Element = &'a mut Self::Element>
     {
