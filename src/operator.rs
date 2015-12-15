@@ -1,7 +1,8 @@
-pub use iterators::{Binary, Unary, BinOp,
+pub use iterators::{Binary, Unary, UnOp, BinOp,
                     Bang,
                     Plus, Minus, Times, Divide, Pipe, Ampersand, Caret,
                     EqEq, BangEq, LessThan, LessThanEq, GreaterThan, GreaterThanEq};
+use generic_simd::SimdVector;
 use {Expression, Constant, E, Length, Switch, Rev};
 use raw::{Zip, Map};
 use std::{cmp, ops};
@@ -14,11 +15,16 @@ macro_rules! un_op_struct {
 
             impl<X> Expression for $name<X>
                 where X: Expression,
-                      X::Element: ops::$name + Clone + Send,
-                      <X::Element as ops::$name>::Output: Send,
+                      $op: UnOp<X::Element>,
+                      $op: UnOp<X::Simd128Element>,
+                      <$op as UnOp<X::Simd128Element>>::Output: SimdVector<Element = <$op as UnOp<X::Element>>::Output>
             {
-                type Element = <X::Element as ops::$name>::Output;
+                type Element = <$op as UnOp<X::Element>>::Output;
                 type Values = Unary<$op, X::Values>;
+
+                type Simd128Element = <$op as UnOp<X::Simd128Element>>::Output;
+                type Simd128Values = Unary<$op, X::Simd128Values>;
+
                 type Rev = $name<X::Rev>;
 
                 fn length(&self) -> Length {
@@ -27,6 +33,13 @@ macro_rules! un_op_struct {
 
                 fn values(self) -> Self::Values {
                     Unary::new($op, self.0.values())
+                }
+
+                fn simd128_values(self) -> (Self::Values, Self::Simd128Values, Self::Values) {
+                    let (lo, mid, hi) = self.0.simd128_values();
+                    (Unary::new($op, lo),
+                     Unary::new($op, mid),
+                     Unary::new($op, hi))
                 }
 
                 fn split(self, round_up: bool) -> (Self, Self) {
@@ -61,12 +74,16 @@ macro_rules! bin_op_struct {
             impl<X, Y> Expression for $name<X, Y>
                 where X: Expression,
                       Y: Expression,
-                      X::Element: $module::$trayt<Y::Element> + Clone,
-                      Y::Element: Clone,
-                      <$op as BinOp<X::Element, Y::Element>>::Output: Send,
+                      $op: BinOp<X::Element, Y::Element>,
+                      $op: BinOp<X::Simd128Element, Y::Simd128Element>,
+                      <$op as BinOp<X::Simd128Element, Y::Simd128Element>>::Output: SimdVector<Element = <$op as BinOp<X::Element, Y::Element>>::Output>,
             {
                 type Element = <$op as BinOp<X::Element, Y::Element>>::Output;
                 type Values = Binary<$op, X::Values, Y::Values>;
+
+                type Simd128Element = <$op as BinOp<X::Simd128Element, Y::Simd128Element>>::Output;
+                type Simd128Values = Binary<$op, X::Simd128Values, Y::Simd128Values>;
+
                 type Rev = $name<X::Rev, Y::Rev>;
 
                 fn length(&self) -> Length {
@@ -78,6 +95,14 @@ macro_rules! bin_op_struct {
 
                 fn values(self) -> Self::Values {
                     Binary::new($op, self.0.values(), self.1.values())
+                }
+
+                fn simd128_values(self) -> (Self::Values, Self::Simd128Values, Self::Values) {
+                    let (lo0, mid0, hi0) = self.0.simd128_values();
+                    let (lo1, mid1, hi1) = self.1.simd128_values();
+                    (Binary::new($op, lo0, lo1),
+                     Binary::new($op, mid0, mid1),
+                     Binary::new($op, hi0, hi1))
                 }
 
                 fn split(self, round_up: bool) -> (Self, Self) {

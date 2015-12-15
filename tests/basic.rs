@@ -1,10 +1,10 @@
 extern crate parry;
+extern crate simd;
 use parry::{Expression, E};
 use std::fmt::Debug;
 
 fn test<E>(e: E, expected: &[E::Element])
-    where E: Expression + Send + Clone, E::Element: Clone + PartialEq + Debug + Send
-
+    where E: Expression + Send + Clone, E::Element: Clone + PartialEq + Debug + parry::generic_simd::SimdValue
 {
     let mut out = expected.to_owned();
     e.clone().write(&mut out[..]);
@@ -69,12 +69,12 @@ fn mul() {
 
 #[test]
 fn div() {
-    let a = &[1, 2, 3] as &[_];
-    let b = &[4, 5, 6] as &[_];
+    let a = &[1.0_f32, 2.0, 3.0] as &[_];
+    let b = &[4.0_f32, 5.0, 6.0] as &[_];
     let c = E(b) / a;
-    test(c, &[4 / 1,
-              5 / 2,
-              6 / 3]);
+    test(c, &[4.0_f32 / 1.0,
+              5.0 / 2.0,
+              6.0 / 3.0]);
 }
 
 #[test]
@@ -130,30 +130,20 @@ fn add_mul() {
 
 #[test]
 fn long() {
-    let a = (0..1_000_000_i64).collect::<Vec<_>>();
-    let b = a.clone();
+    let a = (0..1_000_000_i32).collect::<Vec<_>>();
+    let b = a.iter().map(|x| x / 1000).collect::<Vec<_>>();
 
     let c = E(&a[..]) + E(&b[..]) * &a[..];
-    test(c, &a.iter().map(|&x| x + x * x).collect::<Vec<_>>());
+    test(c, &a.iter().map(|&x| x + (x / 1000) * x).collect::<Vec<_>>());
 }
 
 #[test]
 fn long_forward_rev() {
-    let a = (0..1_000_000_i64).collect::<Vec<_>>();
+    let a = (0..1_000_000_i32).collect::<Vec<_>>();
     let b = a.clone();
 
     let c = E(&a[..]) + b.rev();
     test(c, &a.iter().map(|_| 999_999).collect::<Vec<_>>());
-}
-
-#[test]
-fn zip() {
-    let a = (0..100).collect::<Vec<_>>();
-    let b = a.clone();
-
-    let c = E(&a[..]).zip(&b[..]);
-
-    test(c, &a.iter().map(|&x| (x, x)).collect::<Vec<_>>());
 }
 
 #[test]
@@ -180,7 +170,7 @@ fn add_constant() {
 
 #[test]
 fn switch() {
-    let cond = &[true, true, false, true] as &[_];
+    let cond = &[true.into(), true.into(), false.into(), true.into()] as &[simd::bool32i];
     let a = &[0, 1, 2, 3] as &[_];
     let b = &[10, 11, 12, 13] as &[_];
 
@@ -198,16 +188,16 @@ fn sum() {
 
 #[test]
 fn max() {
-    let a = &[0.0, 1.0, 2.0, 3.0, 4.0, 5.0] as &[_];
-    assert_eq!(E(a).max(), Some(5.0));
-    assert_eq!((-E(a)).max(), Some(0.0));
+    let a = &[0.0_f32, 1.0, 2.0, 3.0, 4.0, 5.0] as &[_];
+    assert_eq!(E(a).max(), Some(5.0_f32));
+    assert_eq!((-E(a)).max(), Some(0.0_f32));
 }
 
 #[test]
 fn min() {
-    let a = &[0.0, 1.0, 2.0, 3.0, 4.0, 5.0] as &[_];
-    assert_eq!(E(a).min(), Some(0.0));
-    assert_eq!((-E(a)).min(), Some(-5.0));
+    let a = &[0.0_f32, 1.0, 2.0, 3.0, 4.0, 5.0] as &[_];
+    assert_eq!(E(a).min(), Some(0.0_f32));
+    assert_eq!((-E(a)).min(), Some(-5.0_f32));
 }
 
 #[test]

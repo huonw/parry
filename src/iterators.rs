@@ -1,4 +1,6 @@
-use std::{cmp, ops};
+use std::ops;
+
+use generic_simd::{SimdEq, SimdOrd};
 
 pub use switch::SwitchIter;
 
@@ -21,12 +23,14 @@ pub struct GreaterThanEq;
 pub struct Tuple;
 
 pub trait UnOp<A> {
-    type Output;
+    type Output: Send;
+
     fn operate(&self, a: A) -> Self::Output;
 }
 
 pub trait BinOp<A, B> {
-    type Output;
+    type Output: Send;
+
     fn operate(&self, a: A, b: B) -> Self::Output;
 }
 
@@ -34,7 +38,7 @@ macro_rules! un_op {
     ($($ty: ty, $trayt: ident, $method: ident;)*) => {
         $(
             impl<A> UnOp<A> for $ty
-                where A: ops::$trayt
+                where A: ops::$trayt + Send, A::Output: Send
             {
                 type Output = A::Output;
 
@@ -49,7 +53,7 @@ macro_rules! bin_op {
     ($($ty: ty, $trayt: ident, $method: ident;)*) => {
         $(
             impl<A, B> BinOp<A, B> for $ty
-                where A: ops::$trayt<B>
+                where A: ops::$trayt<B>, A::Output: Send,
             {
                 type Output = A::Output;
 
@@ -64,13 +68,13 @@ macro_rules! bin_op {
 macro_rules! cmp_op {
     ($($ty: ty, $trayt: ident, $method: ident;)*) => {
         $(
-            impl<A, B> BinOp<A, B> for $ty
-                where A: cmp::$trayt<B>
+            impl<A> BinOp<A, A> for $ty
+                where A: $trayt
             {
-                type Output = bool;
+                type Output = A::Output;
 
-                fn operate(&self, a: A, b: B) -> Self::Output {
-                    cmp::$trayt::$method(&a, &b)
+                fn operate(&self, a: A, b: A) -> Self::Output {
+                    $trayt::$method(&a, &b).into()
                 }
             }
             )*
@@ -91,15 +95,17 @@ bin_op! {
     Caret, BitXor, bitxor;
 }
 cmp_op! {
-    EqEq, PartialEq, eq;
-    BangEq, PartialEq, ne;
-    LessThan, PartialOrd, lt;
-    LessThanEq, PartialOrd, le;
-    GreaterThan, PartialOrd, gt;
-    GreaterThanEq, PartialOrd, ge;
+    EqEq, SimdEq, simd_eq;
+    BangEq, SimdEq, simd_ne;
+    LessThan, SimdOrd, simd_lt;
+    LessThanEq, SimdOrd, simd_le;
+    GreaterThan, SimdOrd, simd_gt;
+    GreaterThanEq, SimdOrd, simd_ge;
 }
 
-impl<A, B> BinOp<A,B> for Tuple {
+impl<A, B> BinOp<A,B> for Tuple
+    where A: Send, B: Send,
+{
     type Output = (A, B);
 
     fn operate(&self, a: A, b: B) -> Self::Output {

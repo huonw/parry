@@ -2,11 +2,11 @@ extern crate parry;
 use parry::{Expression, E};
 use std::fmt::Debug;
 
-fn test<E>(e: E, expected: &[E::Element])
-    where E: Expression + Send, E::Element: Clone + PartialEq + Debug + Send
-
+fn test<E>(e: E, expected: &[bool])
+    where E: Expression + Send, E::Element: Clone + Debug + parry::generic_simd::SimdValue + From<bool> + PartialEq
 {
-    let mut out = expected.to_owned();
+    let expected = expected.iter().map(|&b| b.into()).collect::<Vec<_>>();;
+    let mut out = expected.clone();
     e.write(&mut out[..]);
     assert_eq!(out, expected);
 }

@@ -1,3 +1,4 @@
+use simd::*;
 use {Expression, Length};
 use std::cmp;
 
@@ -9,6 +10,48 @@ impl<T> SwitchOn<T> for bool {
     fn switch(self, t: T, e: T) -> T {
         if self { t } else { e }
     }
+}
+
+macro_rules! switch_simd {
+    ($($val: ident, $bool: ident;)*) => {
+        $(
+            impl SwitchOn<$val> for $bool {
+                fn switch(self, t: $val, e: $val) -> $val {
+                    self.select(t, e)
+                }
+            }
+            )*
+    }
+}
+switch_simd! {
+    i8x16, bool8ix16;
+    i16x8, bool16ix8;
+    i32x4, bool32ix4;
+    u8x16, bool8ix16;
+    u16x8, bool16ix8;
+    u32x4, bool32ix4;
+    f32x4, bool32fx4;
+}
+
+macro_rules! switch_simd_scalar {
+    ($($val: ident, $bool: ident;)*) => {
+        $(
+            impl SwitchOn<$val> for $bool {
+                fn switch(self, t: $val, e: $val) -> $val {
+                    if self.into() { t } else { e }
+                }
+            }
+            )*
+    }
+}
+switch_simd_scalar! {
+    i8, bool8i;
+    i16, bool16i;
+    i32, bool32i;
+    u8, bool8i;
+    u16, bool16i;
+    u32, bool32i;
+    f32, bool32f;
 }
 
 pub struct SwitchIter<B, T, E> {
@@ -55,6 +98,7 @@ pub struct Switch<B, T, E>(B, T, E);
 pub fn make_switch<B, T, E>(b: B, t: T, e: E) -> Switch<B, T, E>
     where B: Expression,
           B::Element: SwitchOn<T::Element>,
+          B::Simd128Element: SwitchOn<T::Simd128Element>,
           T: Expression,
           E: Expression<Element = T::Element>,
 {
@@ -65,11 +109,14 @@ impl<B, T, E> Expression for Switch<B, T, E>
     // this should be, like, "bool"-like or something
     where B: Expression,
           B::Element: SwitchOn<T::Element>,
+          B::Simd128Element: SwitchOn<T::Simd128Element>,
           T: Expression,
-          E: Expression<Element = T::Element>,
+          E: Expression<Element = T::Element, Simd128Element = T::Simd128Element>,
 {
     type Element = T::Element;
     type Values = SwitchIter<B::Values, T::Values, E::Values>;
+    type Simd128Element = T::Simd128Element;
+    type Simd128Values = SwitchIter<B::Simd128Values, T::Simd128Values, E::Simd128Values>;
     type Rev = Switch<B::Rev, T::Rev, E::Rev>;
 
     fn length(&self) -> Length {
@@ -82,6 +129,14 @@ impl<B, T, E> Expression for Switch<B, T, E>
 
     fn values(self) -> Self::Values {
         SwitchIter::new(self.0.values(), self.1.values(), self.2.values())
+    }
+    fn simd128_values(self) -> (Self::Values, Self::Simd128Values, Self::Values) {
+        let (b_l, b_m, b_h) = self.0.simd128_values();
+        let (t_l, t_m, t_h) = self.1.simd128_values();
+        let (e_l, e_m, e_h) = self.2.simd128_values();
+        (SwitchIter::new(b_l, t_l, e_l),
+         SwitchIter::new(b_m, t_m, e_m),
+         SwitchIter::new(b_h, t_h, e_h))
     }
 
     fn split(self, round_up: bool) -> (Self, Self) {

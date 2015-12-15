@@ -1,5 +1,6 @@
 extern crate rayon;
 extern crate num;
+extern crate simd;
 
 use std::ops;
 
@@ -22,6 +23,8 @@ pub use switch::{Switch, SwitchOn};
 mod evaluation;
 pub mod reduce;
 
+pub mod generic_simd;
+
 #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Length {
     Finite(usize),
@@ -40,11 +43,17 @@ impl Length {
 pub trait Expression: Send {
     type Element: Send;
     type Values: Iterator<Item = Self::Element> + DoubleEndedIterator;
-    type Rev: Expression<Element = Self::Element>;
+
+    type Simd128Element: Send + generic_simd::SimdVector<Element = Self::Element>;
+    type Simd128Values: Iterator<Item = Self::Simd128Element> + DoubleEndedIterator;
+
+    type Rev: Expression<Element = Self::Element, Simd128Element = Self::Simd128Element>;
 
     fn length(&self) -> Length;
 
     fn values(self) -> Self::Values;
+
+    fn simd128_values(self) -> (Self::Values, Self::Simd128Values, Self::Values);
 
     fn split(self, round_up: bool) -> (Self, Self);
 
@@ -85,7 +94,7 @@ pub trait Expression: Send {
     }
 
     fn switch<T, E>(self, then: T, else_: E) -> Switch<Self, T, E>
-        where Self: Sized + Expression, Self::Element: SwitchOn<T::Element>, T: Expression, E: Expression<Element = T::Element>
+        where Self: Sized + Expression, Self::Element: SwitchOn<T::Element>, Self::Simd128Element: SwitchOn<T::Simd128Element>, T: Expression, E: Expression<Element = T::Element>
     {
         switch::make_switch(self, then, else_)
     }

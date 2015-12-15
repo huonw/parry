@@ -1,6 +1,7 @@
 use std::{cmp, iter};
 use {Expression, Length};
 use iterators::{Binary, Tuple};
+use generic_simd::SimdValue;
 
 #[derive(Copy, Clone)]
 pub struct Zip<X, Y>(X, Y);
@@ -19,6 +20,8 @@ pub fn make_map<X, F>(x: X, f: F) -> Map<X, F> {
 impl<X: Expression, Y: Expression> Expression for Zip<X, Y> {
     type Element = (X::Element, Y::Element);
     type Values = Binary<Tuple, X::Values, Y::Values>;
+    type Simd128Element = (X::Simd128Element, Y::Simd128Element);
+    type Simd128Values = Binary<Tuple, X::Simd128Values, Y::Simd128Values>;
     type Rev = Zip<X::Rev, Y::Rev>;
 
     fn length(&self) -> Length {
@@ -30,6 +33,14 @@ impl<X: Expression, Y: Expression> Expression for Zip<X, Y> {
 
     fn values(self) -> Self::Values {
         Binary::new(Tuple, self.0.values(), self.1.values())
+    }
+
+    fn simd128_values(self) -> (Self::Values, Self::Simd128Values, Self::Values) {
+        let (lo0, mid0, hi0) = self.0.simd128_values();
+        let (lo1, mid1, hi1) = self.1.simd128_values();
+        (Binary::new(Tuple, lo0, lo1),
+         Binary::new(Tuple, mid0, mid1),
+         Binary::new(Tuple, hi0, hi1))
     }
 
     fn split(self, round_up: bool) -> (Self, Self) {
@@ -49,9 +60,11 @@ impl<X: Expression, Y: Expression> Expression for Zip<X, Y> {
     }
 }
 
-impl<X: Expression, O: Send, F: Clone + FnMut(X::Element) -> O + Send> Expression for Map<X, F> {
+impl<X: Expression, O: Send + SimdValue, F: Clone + FnMut(X::Element) -> O + Send> Expression for Map<X, F> {
     type Element = O;
     type Values = iter::Map<X::Values, F>;
+    type Simd128Element = O::V128;
+    type Simd128Values = Box<DoubleEndedIterator<Item = Self::Simd128Element>>;
     type Rev = Map<X::Rev, F>;
 
     fn length(&self) -> Length {
@@ -60,6 +73,10 @@ impl<X: Expression, O: Send, F: Clone + FnMut(X::Element) -> O + Send> Expressio
 
     fn values(self) -> Self::Values {
         self.0.values().map(self.1)
+    }
+
+    fn simd128_values(self) -> (Self::Values, Self::Simd128Values, Self::Values) {
+        unimplemented!()
     }
 
     fn split(self, round_up: bool) -> (Self, Self) {
