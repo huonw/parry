@@ -130,12 +130,11 @@ impl<B, T, E> Expression for Switch<B, T, E>
     fn values(self) -> Self::Values {
         SwitchIter::new(self.0.values(), self.1.values(), self.2.values())
     }
-    fn simd128_values(self) -> (Self::Values, Self::Simd128Values, Self::Values) {
-        let (b_l, b_m, b_h) = self.0.simd128_values();
-        let (t_l, t_m, t_h) = self.1.simd128_values();
-        let (e_l, e_m, e_h) = self.2.simd128_values();
+    fn simd128_values(self) -> (Self::Simd128Values, Self::Values) {
+        let (b_l, b_h) = self.0.simd128_values();
+        let (t_l, t_h) = self.1.simd128_values();
+        let (e_l, e_h) = self.2.simd128_values();
         (SwitchIter::new(b_l, t_l, e_l),
-         SwitchIter::new(b_m, t_m, e_m),
          SwitchIter::new(b_h, t_h, e_h))
     }
 

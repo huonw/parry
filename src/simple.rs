@@ -21,9 +21,8 @@ impl<'a, T> Expression for Constant<T>
     fn values(self) -> Self::Values {
         iter::repeat(self.0)
     }
-    fn simd128_values(self) -> (Self::Values, Self::Simd128Values, Self::Values) {
-        (iter::repeat(self.0.clone()),
-         iter::repeat(self.0.clone().splat_128()),
+    fn simd128_values(self) -> (Self::Simd128Values, Self::Values) {
+        (iter::repeat(self.0.clone().splat_128()),
          iter::repeat(self.0))
     }
 
@@ -57,7 +56,7 @@ impl<X: Expression> Expression for E<X> {
     fn values(self) -> Self::Values {
         self.0.values()
     }
-    fn simd128_values(self) -> (Self::Values, Self::Simd128Values, Self::Values) {
+    fn simd128_values(self) -> (Self::Simd128Values, Self::Values) {
         self.0.simd128_values()
     }
 
@@ -92,7 +91,7 @@ impl<'a, T> Expression for &'a [T]
     fn values(self) -> Self::Values {
         self.iter().cloned()
     }
-    fn simd128_values(self) -> (Self::Values, Self::Simd128Values, Self::Values) {
+    fn simd128_values(self) -> (Self::Simd128Values, Self::Values) {
         use std::{mem, slice};
         let simd_align = mem::align_of::<Self::Simd128Element>();
         let plain_align = mem::align_of::<Self::Element>();
@@ -113,6 +112,7 @@ impl<'a, T> Expression for &'a [T]
 
         unsafe {
             let lo: &'a [Self::Element] = slice::from_raw_parts(start_p, start_offset);
+            assert_eq!(start_offset, 0);
 
             let middle_simd_p = start_p.offset(start_offset as isize) as *const Self::Simd128Element;
             let middle_simd_len = middle_len / plain_per_simd;
@@ -122,7 +122,7 @@ impl<'a, T> Expression for &'a [T]
             let hi_p = start_p.offset((start_offset + middle_len) as isize);
             let hi: &'a [Self::Element] = slice::from_raw_parts(hi_p, end_offset);
 
-            (lo.iter().cloned(), middle.iter().cloned(), hi.iter().cloned())
+            (middle.iter().cloned(), hi.iter().cloned())
         }
     }
 
@@ -160,7 +160,7 @@ impl<'a, T: 'a + Send + SimdValue> Expression for &'a mut [T] {
     }
 
 
-    fn simd128_values(self) -> (Self::Values, Self::Simd128Values, Self::Values) {
+    fn simd128_values(self) -> (Self::Simd128Values, Self::Values) {
         use std::{mem, slice};
         let simd_align = mem::align_of::<Self::Simd128Element>();
         let plain_align = mem::align_of::<Self::Element>();
@@ -181,6 +181,7 @@ impl<'a, T: 'a + Send + SimdValue> Expression for &'a mut [T] {
 
         unsafe {
             let lo: &'a mut [T] = slice::from_raw_parts_mut(start_p, start_offset);
+            assert_eq!(start_offset, 0);
 
             let middle_simd_p = start_p.offset(start_offset as isize) as *mut _;
             let middle_simd_len = middle_len / plain_per_simd;
@@ -190,7 +191,7 @@ impl<'a, T: 'a + Send + SimdValue> Expression for &'a mut [T] {
             let hi_p = start_p.offset((start_offset + middle_len) as isize);
             let hi: &'a mut [T] = slice::from_raw_parts_mut(hi_p, end_offset);
 
-            (lo.iter_mut(), middle.iter_mut(), hi.iter_mut())
+            (middle.iter_mut(), hi.iter_mut())
         }
     }
 
@@ -223,10 +224,8 @@ impl<T: Expression> Expression for Rev<T> {
         self.0.values().rev()
     }
 
-    fn simd128_values(self) -> (Self::Values, Self::Simd128Values, Self::Values) {
-        let (lo, mid, hi) = self.0.simd128_values();
-        // FIXME: mid.rev() is not right
-        (hi.rev(), mid.rev(), lo.rev())
+    fn simd128_values(self) -> (Self::Simd128Values, Self::Values) {
+        unimplemented!()
     }
 
     fn split(self, round_up: bool) -> (Self, Self) {

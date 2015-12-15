@@ -53,7 +53,7 @@ pub trait Expression: Send {
 
     fn values(self) -> Self::Values;
 
-    fn simd128_values(self) -> (Self::Values, Self::Simd128Values, Self::Values);
+    fn simd128_values(self) -> (Self::Simd128Values, Self::Values);
 
     fn split(self, round_up: bool) -> (Self, Self);
 

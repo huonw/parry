@@ -35,11 +35,10 @@ impl<X: Expression, Y: Expression> Expression for Zip<X, Y> {
         Binary::new(Tuple, self.0.values(), self.1.values())
     }
 
-    fn simd128_values(self) -> (Self::Values, Self::Simd128Values, Self::Values) {
-        let (lo0, mid0, hi0) = self.0.simd128_values();
-        let (lo1, mid1, hi1) = self.1.simd128_values();
+    fn simd128_values(self) -> (Self::Simd128Values, Self::Values) {
+        let (lo0, hi0) = self.0.simd128_values();
+        let (lo1, hi1) = self.1.simd128_values();
         (Binary::new(Tuple, lo0, lo1),
-         Binary::new(Tuple, mid0, mid1),
          Binary::new(Tuple, hi0, hi1))
     }
 
@@ -75,7 +74,7 @@ impl<X: Expression, O: Send + SimdValue, F: Clone + FnMut(X::Element) -> O + Sen
         self.0.values().map(self.1)
     }
 
-    fn simd128_values(self) -> (Self::Values, Self::Simd128Values, Self::Values) {
+    fn simd128_values(self) -> (Self::Simd128Values, Self::Values) {
         unimplemented!()
     }
 

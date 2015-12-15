@@ -35,10 +35,9 @@ macro_rules! un_op_struct {
                     Unary::new($op, self.0.values())
                 }
 
-                fn simd128_values(self) -> (Self::Values, Self::Simd128Values, Self::Values) {
-                    let (lo, mid, hi) = self.0.simd128_values();
+                fn simd128_values(self) -> (Self::Simd128Values, Self::Values) {
+                    let (lo, hi) = self.0.simd128_values();
                     (Unary::new($op, lo),
-                     Unary::new($op, mid),
                      Unary::new($op, hi))
                 }
 
@@ -97,11 +96,10 @@ macro_rules! bin_op_struct {
                     Binary::new($op, self.0.values(), self.1.values())
                 }
 
-                fn simd128_values(self) -> (Self::Values, Self::Simd128Values, Self::Values) {
-                    let (lo0, mid0, hi0) = self.0.simd128_values();
-                    let (lo1, mid1, hi1) = self.1.simd128_values();
+                fn simd128_values(self) -> (Self::Simd128Values, Self::Values) {
+                    let (lo0, hi0) = self.0.simd128_values();
+                    let (lo1, hi1) = self.1.simd128_values();
                     (Binary::new($op, lo0, lo1),
-                     Binary::new($op, mid0, mid1),
                      Binary::new($op, hi0, hi1))
                 }
 
